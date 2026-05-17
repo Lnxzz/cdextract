@@ -23,15 +23,19 @@ The are 3 possible ways to use cdextract:
 
 
 # Dependencies
-1. cdparanoia III (release 10.2)
-2. libflac
-3. libcurl
+1. c/c++ compiler and cmake
+2. cdparanoia III (release 10.2)
+3. libflac
+4. libcurl
+5. sqlite3
 
 For Debian/Ubuntu based systems you can use:
 ```
+# sudo apt install build-essential cmake
 # sudo apt install libcdparanoia0 libcdparanoia-dev
 # sudo apt install flac libflac-dev
 # sudo apt install libcurl4 libcurl4-openssl-dev
+# sudo apt install libsqlite3-0 libsqlite3-dev
 ```
 
 # Building
@@ -45,9 +49,16 @@ Use the standard cmake approach for building and installing:
   sudo make install
 ```
 
+# Server application
+cdextract includes a server application which exposes a rest/json api which allows for easy integration within
+other applications.
+The specification of the API can be found in [doc/cdextract_server_api.md](doc/cdextract_server_api.md).
+
+---
+
 # COPYING
 This software is released under the LGPL v3 license.
 See LICENSE for more information.
 
----
+
 
