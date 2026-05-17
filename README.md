@@ -28,15 +28,20 @@ The are 3 possible ways to use cdextract:
 3. libflac
 4. libcurl
 5. sqlite3
+6. libmicrohttpd
 
-For Debian/Ubuntu based systems you can use:
+For Debian/Ubuntu based systems you can use the following to install all the dependencies
+except for the libcdparanoia library:
 ```
 # sudo apt install build-essential cmake
-# sudo apt install libcdparanoia0 libcdparanoia-dev
 # sudo apt install flac libflac-dev
 # sudo apt install libcurl4 libcurl4-openssl-dev
 # sudo apt install libsqlite3-0 libsqlite3-dev
+# sudo apt install libmicrohttpd-dev
 ```
+libcdparanoia is patched and compiled from source.
+The script [cdparanoia/apply_patch.sh](cdparanoia/apply_patch.sh) takes care of downloading and patching the library source code.
+
 
 # Building
 This project uses cmake to build the library, the cli and server applications.
