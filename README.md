@@ -40,6 +40,8 @@ except for the libcdparanoia library:
 # sudo apt install libmicrohttpd-dev
 ```
 libcdparanoia is patched and compiled from source.
+The patches improve the interoperability with C++ (private is used as variable name, while in c++ private is a reserved keyword) and
+better frees allocated resources.
 The script [cdparanoia/apply_patch.sh](cdparanoia/apply_patch.sh) takes care of downloading and patching the library source code.
 
 
