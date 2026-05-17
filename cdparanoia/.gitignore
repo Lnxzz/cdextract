@@ -1,2 +1,4 @@
 cdparanoia-III-10.2.src.tgz
 cdparanoia-III-10.2*/
+*.cmake
+*.bak

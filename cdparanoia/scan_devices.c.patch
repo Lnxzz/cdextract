@@ -1,5 +1,5 @@
---- cdparanoia-III-10.2/interface/scan_devices.c.org	2024-12-27 11:34:19.272081307 +0100
-+++ cdparanoia-III-10.2/interface/scan_devices.c	2024-12-27 11:34:19.276081337 +0100
+--- cdparanoia-III-10.2/interface/scan_devices.c.org	2024-12-27 11:34:19.000000000 +0100
++++ cdparanoia-III-10.2/interface/scan_devices.c	2024-12-27 11:34:19.000000000 +0100
 @@ -56,36 +56,36 @@
  /* Functions here look for a cdrom drive; full init of a drive type
     happens in interface.c */
@@ -22,7 +22,7 @@
        /* try first eight of each device */
 -      for(j=0;j<4;j++){
 +      for(j=0;j<4;j++) {
- 	char *buffer=copy_string(cdrom_devices[i]);
+ 	char *buffer=copystring(cdrom_devices[i]);
  
  	/* number, then letter */
  	
@@ -656,14 +656,14 @@
 -  d->drive_model=calloc(36,1);
 +  //d->drive_model=calloc(36,1);
    memcpy(d->inqbytes,p,4);
-   d->cdda_device_name=copy_string(generic_device);
-   d->ioctl_device_name=copy_string(specialized_device);
+   d->cdda_device_name=copystring(generic_device);
+   d->ioctl_device_name=copystring(specialized_device);
 @@ -764,17 +797,22 @@
    strscat(d->drive_model,p+32,4);
  
    idmessage(messagedest,messages,"\nCDROM model sensed sensed: %s",d->drive_model);
 +
-+  // cleanup
++  // clean up
 +  if (generic_device)free((char *)generic_device);
 +  if (specialized_device)free((char *)specialized_device);
 +

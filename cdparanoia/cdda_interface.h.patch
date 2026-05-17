@@ -1,5 +1,5 @@
---- cdparanoia-III-10.2/interface/cdda_interface.h.org	2024-12-27 11:34:19.270081292 +0100
-+++ cdparanoia-III-10.2/interface/cdda_interface.h	2024-12-27 11:35:16.020514381 +0100
+--- cdparanoia-III-10.2/interface/cdda_interface.h.org	2024-12-27 11:34:19.000000000 +0100
++++ cdparanoia-III-10.2/interface/cdda_interface.h	2025-11-27 21:48:26.503204009 +0100
 @@ -84,7 +84,7 @@
    int is_atapi;
    int is_mmc;
@@ -9,12 +9,38 @@
    void         *reserved;
    unsigned char inqbytes[4];
  
-@@ -160,7 +160,7 @@
+@@ -160,20 +160,20 @@
  #define TR_UNKNOWN      10  /* Unspecified error */
  #define TR_STREAMING    11  /* loss of streaming */
  
 -static char *strerror_tr[]={
-+static const char *strerror_tr[]={
-   "Success",
-   "Error writing packet command to device",
-   "Error reading command from device",
+-  "Success",
+-  "Error writing packet command to device",
+-  "Error reading command from device",
+-  "SCSI packet data underrun (too little data)",
+-  "SCSI packet data overrun (too much data)",
+-  "Illegal SCSI request (rejected by target)",
+-  "Medium reading data from medium",
+-  "Device busy",
+-  "Device not ready",
+-  "Target hardware fault",
+-  "Unspecified error",
+-  "Drive lost streaming"
+-};
++// static const char *strerror_tr[]={
++//   "Success",
++//   "Error writing packet command to device",
++//   "Error reading command from device",
++//   "SCSI packet data underrun (too little data)",
++//   "SCSI packet data overrun (too much data)",
++//   "Illegal SCSI request (rejected by target)",
++//   "Medium reading data from medium",
++//   "Device busy",
++//   "Device not ready",
++//   "Target hardware fault",
++//   "Unspecified error",
++//   "Drive lost streaming"
++// };
+ 
+ /* Errors returned by lib: 
+ 

@@ -1,5 +1,5 @@
---- cdparanoia-III-10.2/interface/cooked_interface.c.org	2024-12-27 11:34:19.271081299 +0100
-+++ cdparanoia-III-10.2/interface/cooked_interface.c	2024-12-27 11:34:19.274081322 +0100
+--- cdparanoia-III-10.2/interface/cooked_interface.c.org	2024-12-27 11:34:19.000000000 +0100
++++ cdparanoia-III-10.2/interface/cooked_interface.c	2024-12-27 11:34:19.000000000 +0100
 @@ -13,13 +13,13 @@
  static int timed_ioctl(cdrom_drive *d, int fd, int command, void *arg){
    struct timespec tv1;
