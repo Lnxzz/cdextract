@@ -1,0 +1,6 @@
+API HTML documentation generated using openapi-generate-html
+See: https://github.com/qazsato/openapi-generate-html
+
+
+git clone https://github.com/qazsato/openapi-generate-html.git
+npx openapi-generate-html -i cdextract_server_api.yaml -o cdextract_server_api.html --ui swagger --theme light

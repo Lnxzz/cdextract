@@ -1,0 +1,4 @@
+// the configured options and settings for cdextract
+#define CDEXTRACT_VERSION_MAJOR @CDEXTRACT_VERSION_MAJOR@
+#define CDEXTRACT_VERSION_MINOR @CDEXTRACT_VERSION_MINOR@
+#define CDEXTRACT_NAME "cdextract"

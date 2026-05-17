@@ -1,0 +1,11 @@
+build*/
+release*/
+debug*/
+tests/*.json
+tests/*.xml
+tests/*.cue
+tests/*.txt
+tests/*.wav
+tests/*.flac
+.archive*/
+.vscode*/

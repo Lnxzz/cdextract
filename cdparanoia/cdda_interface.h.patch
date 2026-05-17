@@ -1,0 +1,20 @@
+--- cdparanoia-III-10.2/interface/cdda_interface.h.org	2024-12-27 11:34:19.270081292 +0100
++++ cdparanoia-III-10.2/interface/cdda_interface.h	2024-12-27 11:35:16.020514381 +0100
+@@ -84,7 +84,7 @@
+   int is_atapi;
+   int is_mmc;
+ 
+-  cdda_private_data_t *private;
++  cdda_private_data_t *private_data;
+   void         *reserved;
+   unsigned char inqbytes[4];
+ 
+@@ -160,7 +160,7 @@
+ #define TR_UNKNOWN      10  /* Unspecified error */
+ #define TR_STREAMING    11  /* loss of streaming */
+ 
+-static char *strerror_tr[]={
++static const char *strerror_tr[]={
+   "Success",
+   "Error writing packet command to device",
+   "Error reading command from device",

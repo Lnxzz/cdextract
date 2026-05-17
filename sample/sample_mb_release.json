@@ -1,0 +1,491 @@
+{
+    "disambiguation": "",
+    "packaging-id": null,
+    "country": "NL",
+    "status": "Official",
+    "quality": "normal",
+    "date": "1988-08-26",
+    "artist-credit": [
+        {
+            "joinphrase": "",
+            "artist": {
+                "disambiguation": "",
+                "sort-name": "Brel, Jacques",
+                "id": "91eda19b-1437-42cd-b7af-69df24b7f275",
+                "name": "Jacques Brel",
+                "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+                "type": "Person"
+            },
+            "name": "Jacques Brel"
+        }
+    ],
+    "text-representation": {
+        "language": "fra",
+        "script": "Latn"
+    },
+    "cover-art-archive": {
+        "count": 3,
+        "front": true,
+        "artwork": true,
+        "darkened": false,
+        "back": true
+    },
+    "id": "98146261-6b62-3e6d-89fa-163a3458ceeb",
+    "barcode": "042283729728",
+    "asin": "B00004S6C2",
+    "release-events": [
+        {
+            "date": "1988-08-26",
+            "area": {
+                "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+                "iso-3166-1-codes": [
+                    "NL"
+                ],
+                "sort-name": "Netherlands",
+                "disambiguation": "",
+                "name": "Netherlands",
+                "type-id": null,
+                "type": null
+            }
+        }
+    ],
+    "packaging": null,
+    "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+    "title": "De 24 grootste successen",
+    "media": [
+        {
+            "tracks": [
+                {
+                    "number": "1",
+                    "title": "Le Moribond",
+                    "position": 1,
+                    "recording": {
+                        "disambiguation": "1961",
+                        "video": false,
+                        "length": 187013,
+                        "id": "549199a1-9eaf-4972-a406-b81d909b4338",
+                        "title": "Le Moribond",
+                        "first-release-date": "1961-07"
+                    },
+                    "id": "c13ed8ac-8675-3523-be4d-efbef75fb4fb",
+                    "length": 188000
+                },
+                {
+                    "id": "7bc9fea5-6ef2-31d4-81eb-7354f8c019ff",
+                    "length": 194000,
+                    "title": "La Bière",
+                    "number": "2",
+                    "position": 2,
+                    "recording": {
+                        "video": false,
+                        "length": 193920,
+                        "disambiguation": "",
+                        "first-release-date": "1968-09-30",
+                        "id": "62798ae0-c49f-459f-9e8e-d2719d7a7fbd",
+                        "title": "La Bière"
+                    }
+                },
+                {
+                    "recording": {
+                        "length": 235360,
+                        "video": false,
+                        "disambiguation": "",
+                        "first-release-date": "1977",
+                        "title": "Voir un ami pleurer",
+                        "id": "5d9f6aac-b1b0-442f-8f42-f01148eb0d41"
+                    },
+                    "position": 3,
+                    "title": "Voir un ami pleurer",
+                    "number": "3",
+                    "length": 237666,
+                    "id": "a4f68b9c-157e-39a0-b261-7abb085c8ff9"
+                },
+                {
+                    "id": "e54e2aa1-6212-3d4b-af6e-362216380f02",
+                    "length": 177333,
+                    "number": "4",
+                    "title": "Il neige sur Liège",
+                    "recording": {
+                        "disambiguation": "",
+                        "length": 176360,
+                        "video": false,
+                        "title": "Il neige sur Liège",
+                        "id": "99258fec-782f-4e9b-96ff-d37650082b3f",
+                        "first-release-date": "1963-06-19"
+                    },
+                    "position": 4
+                },
+                {
+                    "id": "98a4a7a2-f33f-3dbe-a4e9-252b266c9ffe",
+                    "length": 233000,
+                    "title": "La Valse à mille temps",
+                    "number": "5",
+                    "position": 5,
+                    "recording": {
+                        "video": false,
+                        "length": 230746,
+                        "disambiguation": "",
+                        "first-release-date": "1959-11-10",
+                        "id": "fcd44aae-8a28-4aaa-98cc-aadeba14bcdb",
+                        "title": "La Valse à mille temps"
+                    }
+                },
+                {
+                    "title": "Ne me quitte pas",
+                    "number": "6",
+                    "position": 6,
+                    "recording": {
+                        "disambiguation": "",
+                        "video": false,
+                        "length": 230786,
+                        "id": "81692a75-1518-433f-a360-bb8501c7b7d6",
+                        "title": "Ne me quitte pas",
+                        "first-release-date": "1959-11-10"
+                    },
+                    "id": "921910b1-f87c-3f45-919c-5e80ca56ad41",
+                    "length": 233000
+                },
+                {
+                    "length": 183000,
+                    "id": "75e57859-ea78-343b-9207-3b83e7315f8d",
+                    "position": 7,
+                    "recording": {
+                        "title": "Bruxelles",
+                        "id": "5d350196-fb8b-49ee-802a-9fe111a25284",
+                        "first-release-date": "1962-04",
+                        "disambiguation": "",
+                        "length": 180200,
+                        "video": false
+                    },
+                    "number": "7",
+                    "title": "Bruxelles"
+                },
+                {
+                    "length": 178000,
+                    "id": "f7f7ef53-9e04-3026-9729-57c33769abc6",
+                    "position": 8,
+                    "recording": {
+                        "first-release-date": "1963",
+                        "title": "Mijn vlakke land",
+                        "id": "12b12d8e-6b66-4bb9-83b7-97b2d539f850",
+                        "length": 175000,
+                        "video": false,
+                        "disambiguation": "Le Plat Pays"
+                    },
+                    "title": "Mijn vlakke land",
+                    "number": "8"
+                },
+                {
+                    "length": 166000,
+                    "id": "5aee415e-d6b5-3ecc-8393-880db278cacd",
+                    "recording": {
+                        "video": false,
+                        "length": 164173,
+                        "disambiguation": "",
+                        "first-release-date": "1961-10",
+                        "id": "d8e70864-96fe-4656-ab43-f4ce17cf90ff",
+                        "title": "Marieke"
+                    },
+                    "position": 9,
+                    "title": "Marieke",
+                    "number": "9"
+                },
+                {
+                    "number": "10",
+                    "title": "De nuttelozen van de nacht",
+                    "recording": {
+                        "disambiguation": "Les Paumés du petit matin",
+                        "video": false,
+                        "length": 255160,
+                        "id": "6f74cd0c-2218-409c-9b17-3d39e2cb03f2",
+                        "title": "De nuttelozen van de nacht",
+                        "first-release-date": "1963"
+                    },
+                    "position": 10,
+                    "id": "dafe2bf6-e2e3-378a-8399-8b2c4fa7878b",
+                    "length": 261000
+                },
+                {
+                    "id": "48491470-885d-3035-b260-478fd9814849",
+                    "length": 183666,
+                    "number": "11",
+                    "title": "De burgerij",
+                    "position": 11,
+                    "recording": {
+                        "first-release-date": "1988-08-26",
+                        "id": "0c00795d-c99e-41e7-8e3d-fcd53bd8716d",
+                        "title": "De burgerij (Les Bourgeois)",
+                        "video": false,
+                        "length": 183373,
+                        "disambiguation": ""
+                    }
+                },
+                {
+                    "position": 12,
+                    "recording": {
+                        "title": "Amsterdam",
+                        "id": "0f85d6fd-5961-4c70-b328-38860d67b308",
+                        "first-release-date": "1964-10-21",
+                        "disambiguation": "live, 1964: Olympia, Paris, France",
+                        "length": 200346,
+                        "video": false
+                    },
+                    "number": "12",
+                    "title": "Amsterdam",
+                    "length": 196333,
+                    "id": "53c5f87e-7399-372d-b7dd-15e06337ed1b"
+                },
+                {
+                    "length": 165000,
+                    "id": "b68c7a98-b4f5-3602-a3ca-9195e531b901",
+                    "recording": {
+                        "title": "Rosa",
+                        "id": "e9b93979-d22f-47dc-ac9d-5d31556c9a97",
+                        "first-release-date": "1962",
+                        "disambiguation": "",
+                        "length": 162000,
+                        "video": false
+                    },
+                    "position": 13,
+                    "number": "13",
+                    "title": "Rosa"
+                },
+                {
+                    "id": "f1786e22-d071-3769-8347-613f4246a4c5",
+                    "length": 157506,
+                    "title": "Mathilde",
+                    "number": "14",
+                    "recording": {
+                        "id": "eeb976b7-e05b-4622-a4ed-1dab75cac1e3",
+                        "title": "Mathilde",
+                        "first-release-date": "1964-03-16",
+                        "disambiguation": "",
+                        "video": false,
+                        "length": 157000
+                    },
+                    "position": 14
+                },
+                {
+                    "title": "J’en appelle",
+                    "number": "15",
+                    "recording": {
+                        "first-release-date": "1957",
+                        "title": "J’en appelle",
+                        "id": "977ccf24-91be-425d-990a-5e9689a018a1",
+                        "length": 165333,
+                        "video": false,
+                        "disambiguation": ""
+                    },
+                    "position": 15,
+                    "id": "a39d9bf7-1f58-3fa1-8d26-a88b114f2156",
+                    "length": 167493
+                },
+                {
+                    "number": "16",
+                    "title": "Il y a",
+                    "position": 16,
+                    "recording": {
+                        "first-release-date": "1953-03",
+                        "title": "Il y a",
+                        "id": "792b0c63-90bd-475c-91fd-ac4862f2c741",
+                        "length": 141586,
+                        "video": false,
+                        "disambiguation": ""
+                    },
+                    "id": "18177a8d-6208-3707-b5bd-078e55be8d99",
+                    "length": 143666
+                },
+                {
+                    "position": 17,
+                    "recording": {
+                        "first-release-date": "1967",
+                        "title": "Mon père disait",
+                        "id": "55cbe0c2-2c47-4040-b36f-e4526b4f3aa8",
+                        "length": 186306,
+                        "video": false,
+                        "disambiguation": ""
+                    },
+                    "number": "17",
+                    "title": "Mon père disait",
+                    "length": 185666,
+                    "id": "a619cbdb-b020-345a-bb1a-366b4ccb6db0"
+                },
+                {
+                    "recording": {
+                        "disambiguation": "",
+                        "video": false,
+                        "length": 188506,
+                        "id": "da7f197b-3ef4-4fd4-b09a-f583cb491476",
+                        "title": "Vesoul",
+                        "first-release-date": "1968-09-30"
+                    },
+                    "position": 18,
+                    "number": "18",
+                    "title": "Vesoul",
+                    "length": 190666,
+                    "id": "6e7e7b48-71e8-3327-a50a-86093063f927"
+                },
+                {
+                    "length": 270666,
+                    "id": "105f47ff-6ce8-36b5-b52e-05d520122d1f",
+                    "position": 19,
+                    "recording": {
+                        "first-release-date": "1967-01-26",
+                        "title": "La Chanson des vieux amants",
+                        "id": "a8323ecc-b659-4701-909f-efadc83e56b9",
+                        "length": 269978,
+                        "video": false,
+                        "disambiguation": ""
+                    },
+                    "title": "La Chanson des vieux amants",
+                    "number": "19"
+                },
+                {
+                    "length": 164333,
+                    "id": "e708022c-6b12-3b51-befc-9a3b10598ff3",
+                    "recording": {
+                        "first-release-date": "1962",
+                        "title": "Le Plat Pays",
+                        "id": "541f0329-6cca-4a78-984e-03d8370c43be",
+                        "length": 163000,
+                        "video": false,
+                        "disambiguation": ""
+                    },
+                    "position": 20,
+                    "title": "Le Plat Pays",
+                    "number": "20"
+                },
+                {
+                    "recording": {
+                        "video": false,
+                        "length": 212400,
+                        "disambiguation": "",
+                        "first-release-date": "1988-08-26",
+                        "id": "c087912c-2713-4715-9a19-4e7d3ab21b41",
+                        "title": "Pourquoi faut‐il que les hommes s’ennuient ?"
+                    },
+                    "position": 21,
+                    "title": "Pourquoi faut-il que les hommes s’ennuient ?",
+                    "number": "21",
+                    "length": 214000,
+                    "id": "d061ac8f-3ea1-38c8-b1de-e7bb7a0fa53e"
+                },
+                {
+                    "id": "953f5174-8a63-380c-a46d-f23f00ae9cb3",
+                    "length": 187000,
+                    "number": "22",
+                    "title": "On n’oublie rien",
+                    "position": 22,
+                    "recording": {
+                        "length": 186000,
+                        "video": false,
+                        "disambiguation": "",
+                        "first-release-date": "1961-07",
+                        "title": "On n’oublie rien",
+                        "id": "3b26077f-2bd8-4840-8f66-2f66134993d5"
+                    }
+                },
+                {
+                    "position": 23,
+                    "recording": {
+                        "title": "Les Flamandes",
+                        "id": "5fe9d090-2c1d-4df0-b467-718627da9e56",
+                        "first-release-date": "1959-11-10",
+                        "disambiguation": "1959",
+                        "length": 156693,
+                        "video": false
+                    },
+                    "title": "Les Flamandes",
+                    "number": "23",
+                    "length": 156333,
+                    "id": "ecf05f42-081c-3295-9423-de533198e7a9"
+                },
+                {
+                    "recording": {
+                        "id": "2f1a1bce-30f7-4f4c-b3a2-ca87e6b6b7b4",
+                        "title": "La Chanson de Jacky",
+                        "first-release-date": "1965-11-10",
+                        "disambiguation": "",
+                        "video": false,
+                        "length": 205120
+                    },
+                    "position": 24,
+                    "number": "24",
+                    "title": "Jacky",
+                    "length": 204333,
+                    "id": "d3af75dc-5e5c-3733-852a-d440e81fd7cb"
+                }
+            ],
+            "position": 1,
+            "title": "",
+            "format-id": "9712d52a-4509-3d4b-a1a2-67c88c643e31",
+            "track-count": 24,
+            "format": "CD",
+            "discs": [
+                {
+                    "id": "35ekIPpnsfUwb9OODvgIvLjBggk-",
+                    "offset-count": 24,
+                    "offsets": [
+                        182,
+                        14282,
+                        28832,
+                        46657,
+                        59957,
+                        77432,
+                        94907,
+                        108632,
+                        121982,
+                        134432,
+                        154007,
+                        167782,
+                        182507,
+                        194882,
+                        206695,
+                        219257,
+                        230032,
+                        243957,
+                        258257,
+                        278557,
+                        290882,
+                        306932,
+                        320957,
+                        332682
+                    ],
+                    "sectors": 348007
+                },
+                {
+                    "sectors": 348008,
+                    "offsets": [
+                        183,
+                        14283,
+                        28833,
+                        46658,
+                        59958,
+                        77433,
+                        94908,
+                        108633,
+                        121983,
+                        134433,
+                        154008,
+                        167783,
+                        182508,
+                        194883,
+                        206695,
+                        219258,
+                        230033,
+                        243958,
+                        258258,
+                        278558,
+                        290883,
+                        306933,
+                        320958,
+                        332683
+                    ],
+                    "offset-count": 24,
+                    "id": "HKvbJw6qL1hry_GKOzDUxQc3mlg-"
+                }
+            ],
+            "track-offset": 0
+        }
+    ]
+}

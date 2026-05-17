@@ -1,0 +1,243 @@
+Gnudb CDDB Server Protocol.
+
+For new applications do not use the cddbp protocol (port 8880), it is only left for compatibility with old programs, all cddbp access to gnudb is actually converted to http requests.
+
+The preferred protocol level is 6, most gnudb cddb entries are converted to utf-8.
+
+It is essential for users to be able to configure an email address for use in their requests. If the application does not allow users to edit this email address, it must generate a unique email address specific to each individual installation (e.g., adf1dsqz99@anyhost.com). While the email does not need to exist, it must uniquely identify the user. Failure to adhere to this requirement may result in access to gnudb.gnudb.org being restricted. Additionally, programmers must ensure that the client name and version are accurately specified in requests.
+
+Commands may be submitted to servers in CGI mode using either the "GET" or "POST" HTTP / HTTPS commands. Both methods are supported, and there is no real difference between how both are to be used other than the syntactical difference between the two methods. The "POST" method may provide the ability to issue longer commands, though, depending on the architecture of the system on which the server resides.
+
+The server command must be sent as part of the "Request-URL" in the case of the "GET" method, and as the "Entity-Body" in the case of the "POST" method. In both cases, the command must be of the following form:
+
+http://gnudb.gnudb.org/~cddb/cddb.cgi? cmd=server+command&hello=myname+my.host.com+clientname+version&proto=6
+
+Where the text following the "cmd=" represents the CDDBP command to be executed, the text following the "hello=" represents the arguments to the "cddb hello" command that is implied by this operation, and the text following the "proto=" represents the argument to the "proto" command that is implied by this operation.
+
+The "+" characters in the input represent spaces, and will be translated by the server before performing the request. Special characters may be represented by the sequence "%XX" where "XX" is a two-digit hex number corresponding to the ASCII (ISO-8859-1) sequence of that character. The "&" characters denote separations between the command, hello and proto arguments. Newlines and carriage returns must not appear anywhere in the string except at the end.
+
+List the genre categories:
+Client command: cddb lscat
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb+lscat&hello=name+my.host.com+gnutest+0.1&proto=6
+Response:
+210 OK, category list follows (until terminating `.') data newage classical blues misc soundtrack folk jazz country reggae rock .
+
+Search database for matching entries:
+
+Client command: search artist album tracks
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=search&artist=bob+dylan&album=New&tracks=4&hello=name+my.host.com+gnutest+0.1
+Response:
+200 Found 2 matches, list follows (until terminating `.') folk 2407ef04 Bob Dylan / New York 19.10.1994 (Cd2) folk 2c05bb04 Bob Dylan / New York 19998 (Cd2) .
+
+Query database for matching entries:
+Client command: cddb query discid ntrks off1 off2 ... nsecs
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb+query+9a09340d+13+150+15105+26335 +40545+48890+66822+92035+104685+114340+130040+146350+165575+171530 +2358&hello=name+my.host.com+gnutest+0.1&proto=6
+Response:
+210 Found exact matches, list follows (until terminating `.') data 9a09348a Pink Floyd / THE WALL (Shine On Box) - CD 1 (1992) .
+
+discid: CD disc ID number. Example: 9a09340d
+ntrks: Total number of tracks on CD.
+off1, off2, ...: Frame offset of the starting location of each track.
+nsecs: Total playing length of CD in seconds.
+
+Server response: code categ discid dtitle
+code:
+200 Found exact match
+211 Found inexact matches, list follows (until terminating marker)
+202 No match found
+403 Database entry is corrupt
+
+Read entry from database:
+Client command: cddb read categ discid
+http://gnudb.gnudb.org/~cddb/cddb.cgi? cmd=cddb+read+data+9a09348a& hello=name+my.host.com+gnutest+ 0.1&proto=6
+Response:
+210 data 9a09348a CD database entry follows (until terminating `.')
+# xmcd
+#
+# Track frame offsets:
+# 150
+# 15105
+# 26335
+# 40545
+# 48890
+# 66822
+# 92035
+# 104685
+# 114340
+# 130040
+# 146350
+# 165575
+# 171530
+#
+# Disc length: 2358 seconds
+#
+# Revision: 14
+# Processed by: gnucddb v1.0.1 Copyright (c) Gnudb.
+# Submitted via: ExactAudioCopy v1.1
+#
+DISCID=9a09340d
+DTITLE=Pink Floyd / THE WALL (Shine On Box) - CD 1 (1992)
+DYEAR=1992
+DGENRE=Progressive Rock
+TTITLE0=In The Flesh?
+TTITLE1=The Thin Ice
+TTITLE2=Another Brick In The Wall (Part 1)
+TTITLE3=The Happiest Days Of Our Lives
+TTITLE4=Another Brick In The Wall (Part 2)
+TTITLE5=Mother
+TTITLE6=Goodbye Blue Sky
+TTITLE7=Empty Spaces
+TTITLE8=Young Lust
+TTITLE9=One Of My Turns
+TTITLE10=Don't Leave Me Now
+TTITLE11=Another Brick In The Wall (Part 3)
+TTITLE12=Goodbye Cruel World
+EXTD=
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=
+.
+
+categ: CD category. Always: data
+discid: CD disc ID number. Example: 9a09340d8
+Server response: code categ discid
+# xmcd 2.0 CD database file
+# ...
+(CDDB data...)
+.
+or
+code categ discid No such CD entry in database.
+code:
+210 OK, CDDB database entry follows (until terminating marker)
+401 Specified CDDB entry not found.
+402 Server error.
+403 Database entry is corrupt.
+
+Discid calculation:
+Client command: discid ntrks off_1 off_2 ... off_n nsecs
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=discid+13+150+15105+26335+40545 +48890+66822+92035+104685+114340+130040+146350+165575 +171530+2358&hello=name+my.host.com+gnutest+0.1&proto=6
+Response:
+200 Disc ID is 9a09340d
+
+ntrks: total number of tracks on CD.
+off_X: frame offset of track X.
+nsecs: total playing length of the CD in seconds.
+
+Server response: code Disc ID is discid
+code:
+200 Calculated disc ID properly
+500 Command Syntax error
+discid: CD disc ID number calculated from the given arguments.
+
+Server status:
+Client command: stat
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=stat&hello=name+my.host.com+gnutest+0.1&proto=6
+Response:
+210 OK, status information follows (until terminating `.') Server status: current proto: 6 max proto: 6 interface: http gets: yes puts: yes updates: yes posting: yes validation: accepted quotes: yes strip ext: no secure: yes max lines: 1024 current users: 1 max users: 100 Database entries: 4470323 Database entries by category: data: 395137 newage: 181424 classical: 389597 blues: 211498 misc: 1322942 soundtrack: 238999 folk: 333794 jazz: 256513 country: 121937 reggae: 59730 rock: 958752 .
+Server response: code OK, status information follows (until terminating `.')
+(data)
+.
+
+Submission
+The gnudb accepts only submissions in the US-ASCII, ISO-8859-1 and UTF-8 character sets. If your program supports UTF-8 and protocol level 6, you should always use UTF-8 for submissions and specify UTF-8 as the charset of the e-mail, even if the submission contains no 8bit-characters and would therefore also be valid as US-ASCII. Only valid UTF-8 submissions are allowed to update existing entries that contain characters, which can not be represented in US-ASCII or ISO-8859-1.
+The method of submitting via http is, to transmit the entry to the database through a CGI program, which is present at the same location as the cddb.cgi. The standard address for this is:
+http://gnudb.gnudb.org/~cddb/submit.cgi
+You may implement a button or somesuch in your software's user interface to initiate submissions. Do not submit unless the user has made some changes. Make sure that the revision is incrementet if it is a change to an existing xmcd entry, if it is a new entry the revision should be 0.
+To submit via the cgi-program, you must use the "POST" method of sending data; "GET" is not supported. Several HTTP "Entity-Header" fields (described below) must be included in the data followed by a blank line, followed by the "Entity-Body" (the gnudb entry) in the format described in the database-format specification.
+The header fields are:
+
+Category: valid_freedb_category
+Discid: cd_discid
+User-Email: username@domain
+Submit-Mode: test_or_submit
+Content-Length: gnudb_entry_length
+Charset: character_set_of_gnudb_entry (optional)
+X-Cddbd-Note: message_for_user (optional)
+
+Where
+
+    "valid_freedb_category" is a valid freedb category (valid categories are: blues, classical, country, data, folk, jazz, misc, newage, reggae, rock, soundtrack). Submissions with an invalid category specified will be rejected.
+    "cd_discid" is the 8-digit hex CDDB/freedb disc ID of the entry (see Appendix A). This has to be exactly the same disc ID that appears in the "DISCID=" section of the entry being submitted. If not, the entry will be rejected.
+    "username@domain" is the valid e-mail address of the submitting user. This is required, as the server must be able to notify the submitter, if the submission was rejected. So you should _never_ fill this with a default value. Your program should refuse to submit anything, if the user has not specified an e-mail-address.
+    "test_or_submit" is the word "test" or "submit" (without the surrounding quotes), which specifies if the submission is a test submission or a real submission to the database (test submissions are described below).
+    "gnudb_entry_length" is the size in bytes of the freedb entry being submitted. This number covers only the "Entity-Body" (without the blank line that separates it from the header).
+    "character_set_of_freedb_entry" is US-ASCII, ISO-8859-1 or UTF-8 (can be lower case). This specifies the character set the submitted entry has been encoded in. If your application knows the user's character set, then you should specify it here. If your program supports UTF-8 and protocol level 6, you should always use UTF-8 for submissions and specify UTF-8 as the charset of the e-mail, even if the submission contains no 8bit-characters and would therefore also be valid as US-ASCII. Only submissions specifying UTF-8 as the charset in the headers are allowed to update existing entries that contain characters, which can not be represented in US-ASCII or ISO-8859-1. The default charset value if no charset is specified is ISO-8859-1 for backwards compatibility.
+    "message_for_user" is an arbitrary message to be included at the top of any rejection notice that may be sent to the submitting user. The length of the arbitrary message is limited to 70 chars.
+
+To see, how a correct submission should look like, take a look at the following example:
+
+POST /~cddb/submit.cgi HTTP/1.0
+Category: newage
+Discid: 4306eb06
+User-Email: joe@myhost.home.com
+Submit-Mode: submit
+Charset: ISO-8859-1
+X-Cddbd-Note: Sent by free CD player - Questions: support@freecdplayer.org.
+Content-Length: 960
+
+# xmcd
+#
+# Track frame offsets:
+[ data omitted for brevity ]
+PLAYORDER=
+
+Note the blank line between the "Content-Length" header field and "# xmcd" which marks the beginning of the freedb entry. This complies to the standard http header behaviour where the http header information is separated by a single newline from the body content. Check http://www.w3.org/Protocols/ for more information on the http in general.
+
+The CGI does a quick check on the submitted data (a more thoroughly check of the entry is made later by the server, which can notifies the user by e-mail if the submission has been rejected) and responds to a submission with a 3-digit response code followed by a description. Currently the following response-codes are used:
+
+200 OK, submission has been sent.
+500 Missing required header information.
+500 Internal Server Error: [description].
+501 Invalid header information [details].
+
+where "details" can be one of the following:
+gnudb category
+disc ID
+email address
+charset
+
+The body of the gnudb submission must be sent exactly as described in https://gnudb.org/gnudbformat.php. Do not encode the data in any way before transmitting it; data must be sent as raw text.
+
+Please do not allow a user to submit CD database entries that have completely unfilled contents (i.e., blank information in the disc artist/title as well as the track titles, or filled with useless default information like "track 1", "track 2", etc.). While the current CD database server checks and rejects submissions that have a blank DTITLE line, it doesn't (and can't feasibly) check the track titles effectively, nor can it check any of these fields if they are filled with a default string. If it were, it would have to be hacked to know about the default strings of every possible client.
+
+Thus, please design your client with this in mind. This is a somewhat tricky thing to do, as some CDs contain blank tracks with no titles and you need to allow for that. An example minimum requirement that a CD player client should meet is listed below:
+
+1. Don't allow the "send" or "submit" feature to be activated if the CD database information form is not edited at all.
+2. Check that the disc artist/title contains something (that the user typed in).
+3. Check that all of the tracks have a title filled in by the user.
+
+This should minimize the amount of useless garbage being submitted to the CD database.
+Before you release your software, please be sure that it produces submissions that adhere to the gnudb file format, and that the frame offset, disc length, and disc ID information are correctly computed. For testing, please make your software sends submissions with the "Submit-Mode" HTTP header field set to "test".
+
+gnudb submissions sent in test mode will be sanity-checked by the gnudb server and pass/fail confirmation can be sent back to the submitter, but the submission will not actually be deposited in the CD database. Please do _not_ send submissions in "submit" mode until you have tested your program with several different CD's.
+
+When you feel your application is ready to support submissions, we would appreciate, if you would contact us and provide a copy of your program before releasing it, so we can check if everything is really OK.
+
+Proper use of gnudb:
+There are a few guidelines that must be followed in order to make proper use of gnudb:
+
+When contacting the server the client must specify its own name and version, not that of some other client (such as xmcd). The emailname and emailhost must be a unique email address of the user not a default one such as (user progname).
+
+Before performing a "cddb read", the client program MUST perform a "cddb query". Failure to do so may result in the client program receiving incorrect data from the server. Also, without performing a query, the client program will not benefit from close matches in the event of the lack of an exact match in the database.
+
+Server sites:
+Client command: sites
+http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=sites&hello=name+my.host.com+gnutest+0.1&proto=6
+Response:
+210 OK, site information follows (until terminating `.') gnudb.gnudb.org cddbp 8880 - N000.00 W000.00 Random gnudb server gnudb.gnudb.org http 80 /~cddb/cddb.cgi N000.00 W000.00 Random gnudb server gnudb.gnudb.org http 443 /~cddb/cddb.cgi N000.00 W000.00 Random gnudb server .
+
+Server response: code OK, site information follows (until terminating `.')
+(data)
+.
+The sites command is only left for compatibility with older applications.

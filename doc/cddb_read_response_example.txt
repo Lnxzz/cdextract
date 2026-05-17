@@ -1,0 +1,48 @@
+210 data 92093e0a CD database entry follows (until terminating `.')
+# xmcd CD database file
+#
+# Track frame offsets:
+#	175
+#	18469
+#	34444
+#	51154
+#	70524
+#	88841
+#	104824
+#	124686
+#	140966
+#	159454
+#
+# Disc length: 2368 seconds
+#
+# Revision: 57
+# Processed by: cddbd v1.5.2PL0 Copyright (c) Steve Scherf et al.
+# Submitted via: CDex 1.81
+#
+DISCID=92093e0a
+DTITLE=James Blunt / Back to Bedlam (RE 2005)
+DYEAR=2004
+DGENRE=Pop-Rock
+TTITLE0=High
+TTITLE1=You're Beautiful
+TTITLE2=Wisemen
+TTITLE3=Goodbye My Lover
+TTITLE4=Tears and Rain
+TTITLE5=Out of My Mind
+TTITLE6=So Long, Jimmy
+TTITLE7=Billy
+TTITLE8=Cry
+TTITLE9=No Bravery
+EXTD= YEAR: 2004
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=
+.
