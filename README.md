@@ -1,6 +1,4 @@
-# cdextract - cd audio extraction library and application
----
-
+# cdextract - cd audio extraction library and utilities
 cdextract aims to be a simple but complete solution to extract audio from CD's
 
 cdextract has the following features:
@@ -10,19 +8,21 @@ cdextract has the following features:
   - support for downloading coverart
   - support for flac encoding
 
-This application does not have all the advanced features tools
-like cdparanoia and cdrtools have. 
+This application does not have all the advanced features tools like cdparanoia and cdrtools have. 
 
-cdextract uses the interface and paranoia libraries part of 
-cdparanoia III (release 10.2) by Monty <monty@xiph.org>.
+cdextract uses the interface and paranoia libraries part of cdparanoia III (release 10.2) by Monty <monty@xiph.org>.
 
 Before installing this application, make sure you installed cdparanoia III and 
 the other dependencies (libflac, libcurl) first.
 
+# Usage
+The are 3 possible ways to use cdextract:
+1. as standalone command line utility
+2. as server application exposing a rest/json api
+3. as C/C++ library to integrate within other applications
+
 
 # Dependencies
----
-
 1. cdparanoia III (release 10.2)
 2. libflac
 3. libcurl
@@ -35,9 +35,8 @@ For Debian/Ubuntu based systems you can use:
 ```
 
 # Building
----
-
-This project uses cmake to build the library and the application:
+This project uses cmake to build the library, the cli and server applications.
+Use the standard cmake approach for building and installing:
 ```
   mkdir build
   cd build/
@@ -47,7 +46,6 @@ This project uses cmake to build the library and the application:
 ```
 
 # COPYING
----
 This software is released under the LGPL v3 license.
 See LICENSE for more information.
 
