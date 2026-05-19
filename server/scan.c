@@ -697,7 +697,9 @@ void scan_audio_folder(char *audio_folder, sql_db *db, int download_coverart, in
     case FTS_SL:
     case FTS_F:
       if (p->fts_level > 2) {
-        if (ends_with(".json", p->fts_name)) {
+        if (ends_with(CDE_COVER_INFO, p->fts_name)) {
+          cde_report(CDE_MSG_TYPE_DEBUG, "scan audio folder: discarding coverart release info: %s; path: %s; level: %d", p->fts_name, p->fts_path, p->fts_level);
+        } else if (ends_with(".json", p->fts_name)) {
           cde_report(CDE_MSG_TYPE_DEBUG, "scan audio folder: found json disc info: %s; path: %s; level: %d", p->fts_name, p->fts_path, p->fts_level);
           json_info = 1;
           if (json_disc == NULL) {
