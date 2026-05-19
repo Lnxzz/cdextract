@@ -4,7 +4,7 @@
 
   cdextract - http response functions
 
-  Copyright (C) 2021-2025 E. Heerschop (github@heerschop.frl)
+  Copyright (C) 2021-2026 E. Heerschop (github@heerschop.frl)
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published 
@@ -278,14 +278,8 @@ void init_response(http_response *response) {
  * @param response 
  */
 void free_response(http_response *response) {
-  if (response != NULL) {
-    //if (response->content_type != NULL) {
-    //  free(response->content_type);
-    //  response->content_type = NULL;
-    //}
-    if (response->body != NULL) {
-      free(response->body);
-      response->body = NULL;
-    }
+  if (response != NULL && response->body != NULL) {
+    free(response->body);
+    response->body = NULL;
   }
 }

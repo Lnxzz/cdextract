@@ -2,7 +2,7 @@
 
   libcdextract - 64-bit internal hash function for compact disc identification
 
-  Copyright (C) 2021-2025 E. Heerschop (github@heerschop.frl)
+  Copyright (C) 2021-2026 E. Heerschop (github@heerschop.frl)
 
   This function is used to generate a hash value for a disc based on the
   number of tracks, the disc length and the frame lengths of the tracks. 

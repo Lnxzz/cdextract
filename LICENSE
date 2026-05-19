@@ -1,4 +1,7 @@
-  cdextract - cd audio data extraction library and utility
+  cdextract - cd audio extraction utilities
+
+  Copyright (C) 2021-2026 E. Heerschop (github@heerschop.frl)
+
   This software is released under the LGPL v3 license.
 
   This library uses:

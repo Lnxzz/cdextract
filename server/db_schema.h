@@ -2,7 +2,7 @@
 
   cdextract - sqlite database schema and prepared statements
 
-  Copyright (C) 2021-2025 E. Heerschop (github@heerschop.frl)
+  Copyright (C) 2021-2026 E. Heerschop (github@heerschop.frl)
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published 

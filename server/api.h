@@ -2,7 +2,7 @@
 
   cdextract - server API functions
 
-  Copyright (C) 2021-2025 E. Heerschop (github@heerschop.frl)
+  Copyright (C) 2021-2026 E. Heerschop (github@heerschop.frl)
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published 
@@ -267,7 +267,7 @@ extern ssize_t api_callback_flac_encoder(void *cls, uint64_t pos, char *buf, siz
 extern void api_callback_flac_encoder_cleanup(void *cls);
 
 /**
- * @brief callback to get chunks of flac dencoded audio data
+ * @brief callback to get chunks of flac decoded audio data
  * @param cls the context of the callback
  * @param pos the position in the file to start reading from
  * @param buf the buffer to write the data to
