@@ -60,10 +60,12 @@ Use the standard cmake approach for building and installing:
   sudo make install
 ```
 
-# Server application
+# Server
 cdextract includes a server application which exposes a REST/json API which allows for easy integration within
 other applications.
 The specification of the API can be found in [doc/cdextract_server_api.md](doc/cdextract_server_api.md).
+The server application uses a sqlite3 database to keep track of the disc information and audio tracks extracted.
+It is able to import and query a local cddb database such as the old Freedb database.
 
 ---
 
