@@ -61,6 +61,8 @@ target_link_directories(cdextract-server PUBLIC "/usr/local/lib")
 # installation
 install(TARGETS cdextract-server DESTINATION bin)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/favicon.ico" DESTINATION var/cdextract)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover.png" DESTINATION var/cdextract)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover-back.png" DESTINATION var/cdextract)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server_api.html" DESTINATION var/cdextract RENAME index.html)
 
 # enable test support
