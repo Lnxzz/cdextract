@@ -78,8 +78,8 @@ add_library(cdextract::cdextract ALIAS cdextract)
 
 # installation
 install(TARGETS cdextract DESTINATION lib)
-install(FILES "${PROJECT_SOURCE_DIR}/src/libcdextract_types.h" DESTINATION include)
-install(FILES "${PROJECT_SOURCE_DIR}/src/libcdextract.h" DESTINATION include)
+install(FILES "${PROJECT_SOURCE_DIR}/../src/libcdextract_types.h" DESTINATION include)
+install(FILES "${PROJECT_SOURCE_DIR}/../src/libcdextract.h" DESTINATION include)
 
 # git auto ignore build directory
 if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)

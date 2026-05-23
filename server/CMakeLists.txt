@@ -32,21 +32,21 @@ add_executable(cdextract-server
   request.c
   response.c
   api.c
-  handler.c 
+  handler.c
   server.c)
 
 # configure a header file to pass the version number to the source
 configure_file(../src/config.h.in config.h)
 
 # ensure the required libraries/packages are available
-set(FLAC_LIBRARY "-lFLAC") 
+set(FLAC_LIBRARY "-lFLAC")
 find_library(FLAC_LIBRARY REQUIRED NAMES FLAC)
 
 # check if the sqlite3 package is available
 find_package(SQLite3 REQUIRED)
 
 # ensure the microhttpd library is available
-set(MHTD_LIBRARY "-lmicrohttpd") 
+set(MHTD_LIBRARY "-lmicrohttpd")
 find_library(MHTD_LIBRARY REQUIRED NAMES microhttpd)
 
 # add compile definition for debug build (use: cmake -DCMAKE_BUILD_TYPE=Debug ..)
@@ -60,6 +60,8 @@ target_link_directories(cdextract-server PUBLIC "/usr/local/lib")
 
 # installation
 install(TARGETS cdextract-server DESTINATION bin)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/favicon.ico" DESTINATION var/cdextract)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server_api.html" DESTINATION var/cdextract RENAME index.html))
 
 # enable test support
 enable_testing()
