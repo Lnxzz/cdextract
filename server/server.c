@@ -160,12 +160,12 @@ void fork_to_background(const char* pidfile) {
     char str[256];
     int pid_fd = open(pidfile, O_RDWR|O_CREAT, 0640);
     if (pid_fd < 0) {
-            // unable to open open file
-            exit(EXIT_FAILURE);
+      // unable to open open file
+      exit(EXIT_FAILURE);
     }
     if (lockf(pid_fd, F_TLOCK, 0) < 0) {
-            // unable to lock file
-            exit(EXIT_FAILURE);
+      // unable to lock file
+      exit(EXIT_FAILURE);
     }
     // get current PID
     sprintf(str, "%d\n", getpid());
