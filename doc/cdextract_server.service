@@ -1,0 +1,29 @@
+[Unit]
+Description=cdextract server
+After=network.target sound.target
+
+[Service]
+Type=forking
+PIDFile=/tmp/cdextract.pid
+ExecStart=/usr/local/bin/cdextract-server -c/usr/local/var/cdda -db/usr/local/var/cdextract/cdextract.db -f/usr/local/var/cdextract/data -b
+WorkingDirectory=/tmp/
+ExecReload=/bin/kill -1 -- $MAINPID
+ExecStop=/bin/kill -- $MAINPID
+TimeoutStopSec=5
+KillMode=process
+#User=pi
+
+# Enable this setting to ask systemd to watch over the server process, see
+# systemd.service(5).  This is disabled by default because it causes
+# periodic wakeups which are unnecessary.
+#WatchdogSec=120
+
+# allow the service to use real-time priority 40
+#LimitRTPRIO=40
+#LimitRTTIME=infinity
+
+# disallow writing to /usr, /bin, /sbin, ...
+#ProtectSystem=yes
+
+[Install]
+WantedBy=default.target

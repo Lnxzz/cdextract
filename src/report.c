@@ -26,6 +26,9 @@
 #include "report.h"
 
 
+static FILE *log_stream_ = NULL;
+
+
 /**
  * @brief Report callback pointer
  */
@@ -35,6 +38,23 @@ void(*external_rpt_callback_ptr)(int, char*);
  * @brief Progress callback pointer
  */
 void(*external_progress_callback_ptr)(int, int, int, long, float);
+
+
+/**
+ * @brief set the report output stream
+ * @param stream the output stream to write the report messages to
+ */
+void cde_report_set_output(FILE *stream) {
+  log_stream_ = stream;
+}
+
+/**
+ * @brief get the report output stream
+ * @return the output stream to write the report messages to
+ */
+FILE *cde_report_get_output() {
+  return log_stream_;
+}
 
 /**
  * @brief Logs the reported message
@@ -78,9 +98,9 @@ void cde_report(int rpt_type, const char *rpt_fmt, ...) {
       break;
     }
     if (rpt_type == CDE_MSG_TYPE_PROGRESS) {
-      fprintf(stdout, "\r%s: %s\n", msg_type, buffer);
+      fprintf(log_stream_, "\r%s: %s\n", msg_type, buffer);
     } else {
-      fprintf(stdout, "%s: %s\n", msg_type, buffer);
+      fprintf(log_stream_, "%s: %s\n", msg_type, buffer);
     }
   }
 }

@@ -179,7 +179,7 @@ long read_file(char **data, const char *filename) {
           // read the entire file into memory
           size_t size = fread(buffer, sizeof(char), bufsize, fp);
           if (ferror(fp) != 0) {
-            //fputs("Error reading file", stderr);
+            // error reading file
             bufsize = -1;
             free(buffer);
           } else {

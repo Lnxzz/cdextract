@@ -70,8 +70,6 @@ FLAC__StreamEncoderWriteStatus flac_encode_write_callback(const FLAC__StreamEnco
     return FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR;
   }
 
-  //fprintf(stderr, "DEBUG (flac_encode_write_callback): data length: %ld; samples: %d; frame: %d; left: %d ", bytes, samples, current_frame, encoder_context->bytes_left);
-
   // allocate memory for the output block of data and copy any remaining data if present
   size_t remaining = encoder_context->block_size - encoder_context->block_pos;
   size_t block_size = remaining + bytes;
@@ -221,7 +219,6 @@ int start_flac(FILE *fp, unsigned int total_bytes, track *track_info, flac_encod
       ok = 0;
     }
   }
-  //fprintf(stderr, "DEBUG: encoder initialization: %s\n", ok ? "ok" : "failed");
   return ok ? 0 : 1;
 }
 

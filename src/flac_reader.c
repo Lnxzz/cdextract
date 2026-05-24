@@ -196,7 +196,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           if (track_number > 0 && track_number <= CDE_MAX_TRACKS && decoder_context->track_information->t_num == 0) {
             // set track number only if not already set
             decoder_context->track_information->t_num = track_number;
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): track number: %u; from metadata: %u\n", decoder_context->track_information->t_num, track_number);
           }
         }
 
@@ -207,7 +206,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           }
           if (strlen(value) > 0) {
             set_string(&(decoder_context->track_information->t_title), value);
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): TITLE: %s\n", decoder_context->track_information->t_title);
           }
         }
 
@@ -218,7 +216,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           }
           if (strlen(value) > 0) {
             set_string(&(decoder_context->track_information->t_artist), value);
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): ARTIST: %s\n", decoder_context->track_information->t_artist);
           }
         }
         
@@ -229,7 +226,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           }
           if (strlen(value) > 0) {
             set_string(&(decoder_context->track_information->t_album), value);
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): ALBUM: %s\n", decoder_context->track_information->t_album);
           }
         }
 
@@ -240,7 +236,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           }
           if (strlen(value) > 0) {
             set_string(&(decoder_context->track_information->t_genre), value);
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): GENRE: %s\n", decoder_context->track_information->t_genre);
           }
         }
 
@@ -252,7 +247,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
           int track_year = atoi(value);
           if (track_year > CDE_MIN_YEAR && track_year < CDE_MAX_YEAR) {
             decoder_context->track_information->t_year = track_year;
-            //fprintf(stderr, "DEBUG (flac_metadata_callback): YEAR: %u\n", decoder_context->track_information->t_year);
           }
         }   
       }
@@ -271,7 +265,6 @@ void flac_metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__Stre
             decoder_context->disc_information->mb_front_cover_size = data_length;
           }
         }
-        //fprintf(stderr, "DEBUG (flac_metadata_callback): PICTURE data processed (%u bytes)\n", data_length);
       }
       break;
     default:
@@ -377,7 +370,6 @@ extern long flac_read(flac_decoder_context *decoder_context, char *buffer, size_
 
   if (decoder_context->pos == decoder_context->bytes_decoded) {
     // decode one audio frame
-    //fprintf(stderr, "DEBUG: (flac_read): decode one audio frame\n");
     FLAC__bool ok = FLAC__stream_decoder_process_single(decoder_context->decoder);
     if (!ok) {
       fprintf(stderr, "ERROR: (flac_read): state: %s\n", FLAC__StreamDecoderStateString[FLAC__stream_decoder_get_state(decoder_context->decoder)]);

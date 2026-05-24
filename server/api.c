@@ -441,7 +441,7 @@ static void api_report_callback(int rpt_type, char *rpt_msg) {
     strcpy(msg_type, "");
     break;
   }
-  fprintf(stdout, "%s: %s\n", msg_type, rpt_msg);
+  fprintf(cde_report_get_output(), "%s: %s\n", msg_type, rpt_msg);
 }
 
 
@@ -1203,8 +1203,7 @@ ssize_t api_callback_extract_disc_progress(void *cls, uint64_t pos, char *buf, s
     msleep(100);
     current = clock();
   }
-  fprintf(stdout, "%ld -> %ld (%ld)\n", start, current, current-start);
-  
+
   // prepare response
   char *json_response = calloc(MAX_STATUS_RESPONSE+1, sizeof(char));
   snprintf(json_response, MAX_STATUS_RESPONSE,

@@ -47,6 +47,18 @@ extern void(*external_rpt_callback_ptr)(int, char*);
 extern void(*external_progress_callback_ptr)(int, int, int, long, float);
 
 /**
+ * @brief set the report output stream
+ * @param stream the output stream to write the report messages to
+ */
+extern void cde_report_set_output(FILE *stream);
+
+/**
+ * @brief get the report output stream
+ * @return the output stream to write the report messages to
+ */
+extern FILE *cde_report_get_output();
+
+/**
  * @brief Logs the reported message
  * 
  *        Calls the configured callback (if available)

@@ -26,7 +26,6 @@ add_executable(cdextract-server
   ../src/flac_reader.c
   ../src/wav_reader.c
   timer.c
-  log.c
   db.c
   scan.c
   request.c
@@ -64,6 +63,10 @@ install(FILES "${PROJECT_SOURCE_DIR}/../doc/favicon.ico" DESTINATION var/cdextra
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover.png" DESTINATION var/cdextract)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover-back.png" DESTINATION var/cdextract)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server_api.html" DESTINATION var/cdextract RENAME index.html)
+install(FILES "${PROJECT_SOURCE_DIR}/../sample/cdextract.db" DESTINATION var/cdextract)
+install(DIRECTORY DESTINATION var/cdextract/data DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_WRITE WORLD_READ WORLD_EXECUTE)
+install(DIRECTORY DESTINATION var/cdda DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_WRITE WORLD_READ WORLD_EXECUTE)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server.service" DESTINATION /usr/lib/systemd/system)
 
 # enable test support
 enable_testing()

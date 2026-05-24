@@ -43,7 +43,8 @@ void redirect_stdout(const char *filename, int *file_desc, int *org_out) {
  * @brief restores the standard output
  */
 void restore_stdout(int file_desc, int *org_out) {
-  fflush(stdout); close(file_desc);
+  fflush(stdout); 
+  close(file_desc);
   dup2(*org_out, fileno(stdout));
   close(*org_out);
 }

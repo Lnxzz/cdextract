@@ -75,13 +75,13 @@ options:
  -c<ccddb folder>   folder to import cddb data; default: '/tmp/cdda'
  -db<database file> database file; default: '/tmp/cdextract.db'
  -d<drive name>     cd-rom drive name; default auto detect
- -f<root folder>    root folder for extracted audio data; default: '/tmp/cdextract'
+ -a<root folder>    root folder for extracted audio data; default: '/tmp/cdextract'
  -l<log file>       log file; default log to standard output
  -pid<pid file>     pid file; default: '/tmp/cdextract.pid'
  -p<port>           server port; default port: 8001
  -s                 backup database at startup
  -t<flac|wav>       flac or wav audio output; default: flac
- -a<0|1|2|3>        download cover images; 0=off;1=not to file;2=front and back;3=full default: 2
+ -i<0|1|2|3>        download cover images; 0=off;1=not to file;2=front and back;3=full default: 2
  -v                 verbose; use verbose messaging
  -h                 help; show command line options
 ```

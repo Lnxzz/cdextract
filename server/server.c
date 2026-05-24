@@ -39,7 +39,6 @@
 #include "string_utils.h"
 #include "file_utils.h"
 #include "json_utils.h"
-#include "log.h"
 #include "handler.h"
 
 
@@ -48,6 +47,7 @@
 
 #define DEFAULT_PORT 8001                             // default port for the HTTP server
 #define DEFAULT_PID_FILE "/tmp/cdextract.pid"         // default pid file for the server process
+#define DEFAULT_LOG_FILE "/tmp/cdextract.log"         // default log file for the server process
 #define DEFAULT_DB_FILE "/tmp/cdextract.db"           // default database filename
 #define DEFAULT_ROOT_FOLDER "/tmp/cdextract"          // default root folder for audio files (/mnt/data/music/flac)
 #define DEFAULT_CDDB_FOLDER "/tmp/cdda"               // default folder to import cddb data (/mnt/temp/cdda)
@@ -86,11 +86,11 @@ static void stop_server() {
  * @brief callback for handling signals
  */ 
 void handle_signal(int sig) {
-  if (sig == SIGINT) {
+  if (sig == SIGINT || sig == SIGTERM) {
     // stop the server
     stop_server();
     // reset signal handling to default behavior
-    signal(SIGINT, SIG_DFL);
+    signal(sig, SIG_DFL);
   }
 }
 
@@ -103,19 +103,25 @@ void fork_to_background(const char* pidfile) {
   // try to fork off the parent process
   pid = fork();
   if (pid < 0) {
+    // fork failed
     exit(EXIT_FAILURE);
   }
 
   // let the parent terminate
-  if (pid > 0) exit(EXIT_SUCCESS);
+  if (pid > 0) {
+    exit(EXIT_SUCCESS);
+  }
 
   // the child process becomes session leader
-  if (setsid() < 0) exit(EXIT_FAILURE);
+  if (setsid() < 0) {
+    exit(EXIT_FAILURE);
+  }
 
   // handle signals
   signal(SIGCHLD, SIG_IGN);
   signal(SIGHUP, SIG_IGN);
   signal(SIGINT, handle_signal);
+  signal(SIGTERM, handle_signal);
 
   // try to fork off for the second time
   pid = fork();
@@ -143,7 +149,7 @@ void fork_to_background(const char* pidfile) {
   close(STDIN_FILENO);
   close(STDOUT_FILENO);
   close(STDERR_FILENO);
-
+  
   // close all other open file descriptors
   for (long fd = sysconf((int)_SC_OPEN_MAX); fd > 0; fd--) {
     close((int)fd);
@@ -180,10 +186,10 @@ int main(int argc, char *argv[]) {
   int daemon_mode = DAEMON_OFF;
   int output_type = CDE_OUTPUT_TYPE_FLAC;
   int db_backup = CDE_BACKUP_OFF;
-  int cover_art = CDE_COVERART_COVER_ONLY;
+  int cover_art_img = CDE_COVERART_COVER_ONLY;
   int verbose = CDE_VERBOSE_OFF;
   uint16_t port = DEFAULT_PORT;
-
+  FILE *log_file = NULL;
   char *log_filename = NULL;
 
   char *pid_file = calloc(strlen(DEFAULT_PID_FILE) + 1, sizeof(char));
@@ -192,8 +198,8 @@ int main(int argc, char *argv[]) {
   char *db_filename = calloc(strlen(DEFAULT_DB_FILE) + 1, sizeof(char));
   strcpy(db_filename, DEFAULT_DB_FILE);
 
-  char *root_folder = calloc(strlen(DEFAULT_ROOT_FOLDER) + 1, sizeof(char));
-  strcpy(root_folder, DEFAULT_ROOT_FOLDER);
+  char *audio_root_folder = calloc(strlen(DEFAULT_ROOT_FOLDER) + 1, sizeof(char));
+  strcpy(audio_root_folder, DEFAULT_ROOT_FOLDER);
 
   char *cddb_folder = calloc(strlen(DEFAULT_CDDB_FOLDER) + 1, sizeof(char));
   strcpy(cddb_folder, DEFAULT_CDDB_FOLDER);
@@ -216,9 +222,9 @@ int main(int argc, char *argv[]) {
     } else if (starts_with("-d", argv[i])) {
       device_name = calloc(strlen(&argv[i][1]), sizeof(char));
       strcpy(device_name, &argv[i][2]);
-    } else if (starts_with("-f", argv[i])) {
-      root_folder = realloc(root_folder, strlen(&argv[i][1]) * sizeof(char));
-      strcpy(root_folder, &argv[i][2]);
+    } else if (starts_with("-a", argv[i])) {
+      audio_root_folder = realloc(audio_root_folder, strlen(&argv[i][1]) * sizeof(char));
+      strcpy(audio_root_folder, &argv[i][2]);
     } else if (starts_with("-l", argv[i])) {
       log_filename = calloc(strlen(&argv[i][1]), sizeof(char));
       strcpy(log_filename, &argv[i][2]);
@@ -238,13 +244,13 @@ int main(int argc, char *argv[]) {
       } else if (strcmp(&argv[i][2], "wav") == 0) {
         output_type = CDE_OUTPUT_TYPE_WAV;
       } else {
-        fprintf(stderr, "unknown audio output type: %s\n", &argv[i][2]);
+        fprintf(stderr, "Error: unknown audio output type: %s\n", &argv[i][2]);
         return 1;
       }
-    } else if (starts_with("-a", argv[i])) {
-      int cart = atoi(&argv[i][2]);
-      if (cart>=0 && cart<=3) {
-        cover_art = cart;
+    } else if (starts_with("-i", argv[i])) {
+      int cart_img = atoi(&argv[i][2]);
+      if (cart_img>=0 && cart_img<=3) {
+        cover_art_img = cart_img;
       }
     } else if (starts_with("-v", argv[i])) {
       verbose = CDE_VERBOSE_ON;
@@ -255,13 +261,13 @@ int main(int argc, char *argv[]) {
       fprintf(stdout, " -c<ccddb folder>   folder to import cddb data; default: '%s'\n", DEFAULT_CDDB_FOLDER);
       fprintf(stdout, " -db<database file> database file; default: '%s'\n", DEFAULT_DB_FILE);
       fprintf(stdout, " -d<drive name>     cd-rom drive name; default auto detect\n");
-      fprintf(stdout, " -f<root folder>    root folder for extracted audio data; default: '%s'\n", DEFAULT_ROOT_FOLDER);
+      fprintf(stdout, " -a<root folder>    root folder for extracted audio data; default: '%s'\n", DEFAULT_ROOT_FOLDER);
       fprintf(stdout, " -l<log file>       log file; default log to standard output\n");
       fprintf(stdout, " -pid<pid file>     pid file; default: '%s'\n", DEFAULT_PID_FILE);
       fprintf(stdout, " -p<port>           server port; default port: %d\n", DEFAULT_PORT);
       fprintf(stdout, " -s                 backup database at startup\n");
       fprintf(stdout, " -t<flac|wav>       flac or wav audio output; default: flac\n");
-      fprintf(stdout, " -a<0|1|2|3>        download cover images; 0=off;1=not to file;2=front and back;3=full default: %d\n", CDE_COVERART_COVER_ONLY);
+      fprintf(stdout, " -i<0|1|2|3>        download cover images; 0=off;1=not to file;2=front and back;3=full default: %d\n", CDE_COVERART_COVER_ONLY);
       fprintf(stdout, " -v                 verbose; use verbose messaging\n");
       fprintf(stdout, " -h                 help; show command line options\n\n");
 
@@ -271,23 +277,37 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  if (daemon_mode == DAEMON_ON) {
+    // if configured as daemon: detach from controlling process and run in the background
+    fork_to_background(pid_file);
+  }
+
   // set effective user id/user group to the real user id/group
   seteuid(getuid());
   setegid(getgid());
 
-  // redirect output to the log file
-  int file_desc;  // file descriptor for the log file
-  int org_out;    // original stdout file descriptor
-  if (log_filename) {
-    redirect_stdout(log_filename, &file_desc, &org_out);
+  // redirect output to the log file when requested or when running as daemon
+  if (daemon_mode == DAEMON_ON && log_filename == NULL) {
+    log_filename = calloc(strlen(DEFAULT_LOG_FILE) + 1, sizeof(char));
+    strcpy(log_filename, DEFAULT_LOG_FILE);
+  } 
+  if (log_filename != NULL) {
+    log_file = fopen(log_filename, "w");
+    if (log_file == NULL) {
+      fprintf(stderr, "Error:unable to open log file: %s\n", log_filename);
+      goto cleanup;
+    }
+    cde_report_set_output(log_file);
+  } else {
+    cde_report_set_output(stdout);
   }
 
   // initialize the request/response handler and the cdextract library context
-  init_handler(device_name, root_folder, cddb_folder, db_filename, db_backup);
+  init_handler(device_name, audio_root_folder, cddb_folder, db_filename, db_backup);
   handler_set_option(CDE_OPTION_VERBOSE, verbose);
   handler_set_option(CDE_OPTION_VIRTUAL_DRIVE, CDE_VIRTUAL_DRIVE_OFF);
   handler_set_option(CDE_OPTION_OUTPUT_TYPE, output_type);
-  handler_set_option(CDE_OPTION_COVERART, cover_art);
+  handler_set_option(CDE_OPTION_COVERART, cover_art_img);
   handler_set_option(CDE_OPTION_EJECT_WHEN_DONE, CDE_EJECT_WHEN_DONE_OFF);
   handler_set_option(CDE_OPTION_WRITE_JSON, CDE_WRITE_JSON_ON);
   handler_set_option(CDE_OPTION_WRITE_CUE_SHEET, CDE_WRITE_CUE_SHEET_ON);
@@ -299,18 +319,16 @@ int main(int argc, char *argv[]) {
 
   // start the HTTP server
   if (start_server(port) != 0) {
-    fprintf(stderr, "unable to start server at port: %d", port);
+    fprintf(stderr, "Error: unable to start server at port: %d\n", port);
     goto cleanup;
   }
 
   // process commands
   if (daemon_mode == DAEMON_ON) {
-    // if configured as daemon: detach from controlling process and run in the background
-    fork_to_background(pid_file);
     // wait until the signal handler receives a SIGINT signal
     // and initiates the shutdown process of the running services
     for (;;) {
-      sleep(3600);
+      sleep(10);
     }
   } else {
     // console: wait for key press to shutdown
@@ -331,11 +349,13 @@ cleanup:
   }
   free(db_filename);
   free(cddb_folder);
-  free(root_folder);
+  free(audio_root_folder);
   free(pid_file);
   if (log_filename) {
-    restore_stdout(file_desc, &org_out);
     free(log_filename);
+  }
+  if (log_file != NULL) {
+    fclose(log_file);
   }
   return 0;
 }

@@ -2089,8 +2089,6 @@ int search_cddb_entry_in_database(sql_db *db, disc *disc_info, long *cddb_id, di
   sqlite3_bind_int(statement, 8, disc_info->d_year);                        // bind disc release year
   sqlite3_bind_text(statement, 9, disc_info->d_genre, -1, SQLITE_STATIC);   // bind disc genre
 
-  //fprintf(stderr, "XXXXX DEBUG: search_cddb_entry_in_database query: %s\n", sqlite3_expanded_sql(statement));
-
   long int_cddb_id, prev_cddb_id = -1;
   long weight, prev_weight = -1;
   int track_cnt, track_num, track_length, total_length, valid = 1;
@@ -2133,8 +2131,6 @@ int search_cddb_entry_in_database(sql_db *db, disc *disc_info, long *cddb_id, di
       track_num = sqlite3_column_int(statement, 12);
       track_length = sqlite3_column_int(statement, 14);
 
-      //fprintf(stderr, "XXXXX DEBUG: search_cddb_entry_in_database tnum: %d, t_length: %d, track length: %d, abs: %d\n", track_num, disc_info->tracks[track_num-1].t_length, track_length, abs(disc_info->tracks[track_num-1].t_length - track_length));
-      
       // check if track information is valid
       if (valid == 1) { 
         if (track_num > 0 && track_num <= disc_info->d_tracks &&
