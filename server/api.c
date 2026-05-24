@@ -1285,6 +1285,10 @@ void api_set_extract_disc_progress(int rpt_type, int function, int track, long s
       track = 0;
       sector = 0;
       percentage = 100;
+      // update the disc information in the database to indicate that the disc has been extracted
+      if (store_disc_in_database(db, cde->disc_info, 1) != 0) {
+        cde_report(CDE_MSG_TYPE_ERROR, "api_set_extract_disc_progress: unable to store disc information: (%d) %s", db->status, db->msg);
+      }
       break;
     // paranoia specific warnings and errors
     case EXTRACT_CB_FIXUP_EDGE:

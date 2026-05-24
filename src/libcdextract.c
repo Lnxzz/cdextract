@@ -1087,13 +1087,13 @@ int cde_download_disc_info(cde_state *cde, int fuzzy_lookup, int overwrite, int 
       sprintf(back_cover_file, "%s/%s", cde->folder, CDE_COVER_BACK);
       if (stat(back_cover_file, &st) == 0) {
         // file available: try to load the back cover from file
-        cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: loading back cover");
+        cde_report(CDE_MSG_TYPE_DEBUG, "cde_download_disc_info: loading back cover");
         cde->disc_info->mb_back_cover_size = read_file(&cde->disc_info->mb_back_cover, back_cover_file);
       }
       if (cde->disc_info->mb_back_cover_size <= 0) {
         if (strlen(cde->disc_info->mb_release_id) > 0) {
           // back cover not loaded from file: try to download back cover from the online coverart service
-          cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: get back cover for release id: %s", cde->disc_info->mb_release_id);
+          cde_report(CDE_MSG_TYPE_DEBUG, "cde_download_disc_info: get back cover for release id: %s", cde->disc_info->mb_release_id);
           // note: we are only downloading the cover art to memory in this step with MB_COVERART_MEM_ONLY
           //       Covers are only written to file as part of the audio extraction process
           int r = mb_caa_get_back_cover(cde->disc_info, cde->download_coverart, cde->folder, cde->verbose);
@@ -1366,14 +1366,14 @@ void *cde_extract_audio_t(void *state) {
         // write flac
         res = write_flac(encoder_context, ((char *)readbuf), CD_FRAMESIZE_RAW);
         if (res) {
-          cde_report(CDE_MSG_TYPE_ERROR, "Error writing output: %s", strerror(errno));
+          cde_report(CDE_MSG_TYPE_ERROR, "cde_extract_audio: error writing output: %s", strerror(errno));
           goto cleanup;
         }
       } else {
         // write wav
         res = write_wav(out, ((char *)readbuf), CD_FRAMESIZE_RAW);
         if (res) {
-          cde_report(CDE_MSG_TYPE_ERROR, "Error writing output: %s", strerror(errno));
+          cde_report(CDE_MSG_TYPE_ERROR, "cde_extract_audio: error writing output: %s", strerror(errno));
           goto cleanup;
         }
       }
