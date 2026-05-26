@@ -1,11 +1,11 @@
 [Unit]
-Description=cdextract server
+Description=cdextract-server
 After=network.target sound.target
 
 [Service]
 Type=forking
 PIDFile=/tmp/cdextract.pid
-ExecStart=/usr/local/bin/cdextract-server -c/usr/local/var/cdda -db/usr/local/var/cdextract/cdextract.db -f/usr/local/var/cdextract/data -b
+ExecStart=/usr/local/bin/cdextract-server -c/usr/local/var/cdda -db/usr/local/var/cdextract/cdextract.db -a/usr/local/var/cdextract/data -b
 WorkingDirectory=/tmp/
 ExecReload=/bin/kill -1 -- $MAINPID
 ExecStop=/bin/kill -- $MAINPID

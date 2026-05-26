@@ -66,7 +66,7 @@ install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server_api.html" DESTINATI
 install(FILES "${PROJECT_SOURCE_DIR}/../sample/cdextract.db" DESTINATION var/cdextract)
 install(DIRECTORY DESTINATION var/cdextract/data DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_WRITE WORLD_READ WORLD_EXECUTE)
 install(DIRECTORY DESTINATION var/cdda DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_WRITE WORLD_READ WORLD_EXECUTE)
-install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract_server.service" DESTINATION /usr/lib/systemd/system)
+install(FILES "${PROJECT_SOURCE_DIR}/../doc/cdextract-server.service" DESTINATION /usr/lib/systemd/system)
 
 # enable test support
 enable_testing()
