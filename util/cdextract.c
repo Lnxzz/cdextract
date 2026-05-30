@@ -153,11 +153,14 @@ int main(int argc, char *argv[]) {
   char cmd = ' ';
   char *str = calloc(256, sizeof(char));
 
-  char *root_folder = calloc(15, sizeof(char));
-  strcpy(root_folder, "/tmp/cdextract");
+  char *audio_folder = calloc(15, sizeof(char));
+  strcpy(audio_folder, "/tmp/cdextract");
   
   char *cddb_folder = calloc(10, sizeof(char));
-  strcpy(cddb_folder, "/tmp/cddb");
+  strcpy(cddb_folder, "/tmp/cdda");
+
+  char *web_folder = calloc(15, sizeof(char));
+  strcpy(web_folder, "/tmp/cdextract");
 
   char *device_name = NULL;
 
@@ -187,9 +190,9 @@ int main(int argc, char *argv[]) {
     } else if (starts_with("-d", argv[i])) {
       device_name = calloc(strlen(&argv[i][1]), sizeof(char));
       strcpy(device_name, &argv[i][2]);
-    } else if (starts_with("-f", argv[i])) {
-      root_folder = realloc(root_folder, strlen(&argv[i][1]) * sizeof(char));
-      strcpy(root_folder, &argv[i][2]);
+    } else if (starts_with("-a", argv[i])) {
+      audio_folder = realloc(audio_folder, strlen(&argv[i][1]) * sizeof(char));
+      strcpy(audio_folder, &argv[i][2]);
     } else if (starts_with("-l", argv[i])) {
       cmd = 'l';
       cue_sheet = realloc(cue_sheet, strlen(&argv[i][1]) * sizeof(char));
@@ -202,7 +205,7 @@ int main(int argc, char *argv[]) {
       printf("options:\n");
       printf(" -t<flac|wav>\n");
       printf(" -d<drive name>\n");
-      printf(" -f<output folder>\n");
+      printf(" -a<audio output folder>\n");
       printf(" -v verbose\n");
       printf("commands:\n");
       printf(" -e extract audio data\n");
@@ -221,7 +224,7 @@ int main(int argc, char *argv[]) {
 
   // initialize the cdextract library
   cde_state *cde = calloc(1, sizeof(cde_state));
-  cde_initialize(cde, device_name, root_folder, cddb_folder, main_report_callback, main_progress_callback);
+  cde_initialize(cde, device_name, audio_folder, cddb_folder, web_folder, main_report_callback, main_progress_callback);
   cde_set_option(cde, CDE_OPTION_VERBOSE, verbose);
   cde_set_option(cde, CDE_OPTION_VIRTUAL_DRIVE, CDE_VIRTUAL_DRIVE_OFF);
   cde_set_option(cde, CDE_OPTION_OUTPUT_TYPE, output_type);
@@ -312,7 +315,7 @@ int main(int argc, char *argv[]) {
 
       // load cue sheet
       cde_state *cde_cue = calloc(1, sizeof(cde_state));
-      cde_initialize(cde_cue, device_name, root_folder, cddb_folder, main_report_callback, main_progress_callback);
+      cde_initialize(cde_cue, device_name, audio_folder, cddb_folder, web_folder, main_report_callback, main_progress_callback);
       cde_set_option(cde_cue, CDE_OPTION_VERBOSE, verbose);
       cde_set_option(cde_cue, CDE_OPTION_VIRTUAL_DRIVE, CDE_VIRTUAL_DRIVE_ON);
 
@@ -359,8 +362,9 @@ int main(int argc, char *argv[]) {
   }
 
   free(cue_sheet);
+  free(web_folder);
   free(cddb_folder);
-  free(root_folder);
+  free(audio_folder);
   free(str);
   return 0;
 }

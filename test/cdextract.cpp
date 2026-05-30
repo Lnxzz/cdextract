@@ -129,8 +129,9 @@ int main(int argc, char *argv[]) {
   cdextract::client cde_client;
   std::string file_name =  "../../tests/sheet.cue";;
   std::string device_name = "";
-  std::string root_folder = "/tmp"; 
+  std::string audio_folder = "/tmp/cdextract"; 
   std::string cddb_folder = "/tmp/cddb"; 
+  std::string web_folder = "/tmp/cdextract"; 
   int virtual_drive = CDE_VIRTUAL_DRIVE_ON;
   int verbose = CDE_VERBOSE_ON;
   int output_type = CDE_OUTPUT_TYPE_FLAC;
@@ -143,7 +144,7 @@ int main(int argc, char *argv[]) {
 
   // connect
   std::cout << "connect: ";
-  show(cde_client.connect(device_name, root_folder, cddb_folder, virtual_drive, verbose, output_type, coverart, eject_when_done, write_json, write_cue_sheet, show_disc_info));
+  show(cde_client.connect(device_name, audio_folder, cddb_folder, web_folder, virtual_drive, verbose, output_type, coverart, eject_when_done, write_json, write_cue_sheet, show_disc_info));
 
   if (cde_client.is_connected()) {
     std::cout << "connected\n";

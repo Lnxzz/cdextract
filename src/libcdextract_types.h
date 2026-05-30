@@ -103,8 +103,9 @@ typedef struct disc {
 
 typedef struct cde_state {
   char *cdrom_device;      // cdrom device name. Example: /dev/cdrom
-  char *root_folder;       // root folder to store audio data
+  char *audio_folder;      // base folder to store audio data
   char *cddb_folder;       // folder to read cddb data from
+  char *web_folder;        // folder to read web data from (default covers, index.html, etc.)
   char *folder;            // folder to store the current disc
   cdrom_drive *drv;        // cdda cdrom device structure
   disc *disc_info;         // disc information structure

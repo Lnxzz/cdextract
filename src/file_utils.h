@@ -32,12 +32,12 @@
 #define PATH_CHAR_FILTER "|\"<>:?*#%@{}=!$"
 
 /**
- * @brief construct the full path using the given root folder and path
- * @param root_folder the root folder to use
- * @param relative_path the relative path to append to the root folder
+ * @brief construct the full path using the given base folder and path
+ * @param base_folder the base folder to use
+ * @param relative_path the relative path to append to the base folder
  * @return a newly allocated string containing the full path, or NULL on error
  */
-extern char *get_full_path(const char *root_folder, const char *path);
+extern char *get_full_path(const char *base_folder, const char *path);
 
 /**
  * @brief create path with given mode

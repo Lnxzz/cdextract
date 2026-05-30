@@ -81,7 +81,7 @@ typedef struct response_data_context {
  * @brief initialize the api including the cdextract library  
  *        context and the database connection
  */
-extern void api_init(char *device_name, char *root_folder, char *cddb_folder, char *db_filename, int db_backup);
+extern void api_init(char *device_name, char *audio_folder, char *cddb_folder, char *web_folder, char *db_filename, int db_backup);
 
 /**
  * @brief clean the api context including the cdextract   

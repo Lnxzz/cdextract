@@ -133,7 +133,7 @@ class client {
    * 
    * @return cde_result
    */
-  cde_result connect(std::string device_name = "", std::string root_folder = "/tmp/cdextract", std::string cddb_folder = "/tmp/cddb", int virtual_drive = CDE_VIRTUAL_DRIVE_OFF, int verbose = CDE_VERBOSE_OFF, int output_type = CDE_OUTPUT_TYPE_FLAC, int coverart = CDE_COVERART_COVER_ONLY, int eject_when_done = CDE_EJECT_WHEN_DONE_OFF, int write_json = CDE_WRITE_JSON_OFF, int write_cue_sheet = CDE_WRITE_CUE_SHEET_OFF, int show_disc_info = CDE_SHOW_DISC_INFO_OFF);
+  cde_result connect(std::string device_name = "", std::string audio_folder = "/tmp/cdextract", std::string cddb_folder = "/tmp/cddb", std::string web_folder = "/tmp/cdextract", int virtual_drive = CDE_VIRTUAL_DRIVE_OFF, int verbose = CDE_VERBOSE_OFF, int output_type = CDE_OUTPUT_TYPE_FLAC, int coverart = CDE_COVERART_COVER_ONLY, int eject_when_done = CDE_EJECT_WHEN_DONE_OFF, int write_json = CDE_WRITE_JSON_OFF, int write_cue_sheet = CDE_WRITE_CUE_SHEET_OFF, int show_disc_info = CDE_SHOW_DISC_INFO_OFF);
 
   /**
    * @brief closes the connection with the cdrom drive
@@ -229,11 +229,11 @@ class client {
   int write_cddb_entry(int overwrite);
 
   /**
-   * @brief get the cdextract root folder
+   * @brief get the cdextract audio base folder
    * 
    * @return int the client status
    */
-  std::string get_root_folder();
+  std::string get_audio_folder();
 
   /**
    * @brief get the cdextract client status
@@ -245,8 +245,9 @@ class client {
  private:
   std::shared_ptr<cde_state *> cde_ = nullptr;
   char *device_name_ = NULL;
-  char *root_folder_ = NULL; 
-  char *cddb_folder_ = NULL; 
+  char *audio_folder_ = NULL;
+  char *cddb_folder_ = NULL;
+  char *web_folder_ = NULL;
   void(*report_callback_)(int, char*) = nullptr;
   void(*progress_callback_)(int, int, int, long, float) = nullptr;
 };

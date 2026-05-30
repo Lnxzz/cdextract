@@ -142,7 +142,7 @@ void data_response(const char *data, long size, int mime_type, http_response *re
 /**
  * @brief get a response containing the contents of a file
  */
-void file_response(const char *path, char *root_folder, http_response *response) {
+void file_response(const char *path, char *base_folder, http_response *response) {
   
   // replace characters not allowed in filename (linux and windows)
   char *relative_path = replace_chars(path, PATH_CHAR_FILTER, '-');
@@ -166,9 +166,9 @@ void file_response(const char *path, char *root_folder, http_response *response)
   while (pos < strlen(relative_path) && relative_path[pos] == '/') { pos++; }
 
   // determine absolute path
-  int absolute_path_len = strlen(root_folder) + strlen(&relative_path[pos]) + 2;
+  int absolute_path_len = strlen(base_folder) + strlen(&relative_path[pos]) + 2;
   char *absolute_path = calloc(absolute_path_len, sizeof(char));
-  snprintf(absolute_path, absolute_path_len, "%s/%s", root_folder, &relative_path[pos]);
+  snprintf(absolute_path, absolute_path_len, "%s/%s", base_folder, &relative_path[pos]);
 
   // read file
   long size = read_file(&(response->body), absolute_path);

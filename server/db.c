@@ -180,6 +180,10 @@ int create_schema(sql_db *db) {
   res = execute_sql(db, db_create_idx_disc_lookup);
   res = execute_sql(db, db_create_idx_cddb_lookup);
 
+  // try to insert an empty front and back cover
+  get_cover_id(db, 0, NULL, 0, 1);
+  get_cover_id(db, 1, NULL, 0, 1);
+
   return res;
 }
 
@@ -1394,7 +1398,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
     long front_cover_id = get_cover_id(db, 0, disc_info->mb_front_cover, disc_info->mb_front_cover_size, 1);
 
     // try to insert the back cover returning the cover id
-    long back_cover_id = get_cover_id(db, 0, disc_info->mb_back_cover, disc_info->mb_back_cover_size, 1);
+    long back_cover_id = get_cover_id(db, 1, disc_info->mb_back_cover, disc_info->mb_back_cover_size, 1);
 
     // check inserted/retrieved cover identifiers
     if (front_cover_id < 0 || back_cover_id < 0) {

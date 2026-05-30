@@ -31,12 +31,12 @@
 
 
 /**
- * @brief construct the full path using the given root folder and relative path
- * @param root_folder the root folder to use
- * @param relative_path the relative path to append to the root folder
+ * @brief construct the full path using the given base folder and relative path
+ * @param base_folder the base folder to use
+ * @param relative_path the relative path to append to the base folder
  * @return a newly allocated string containing the full path, or NULL on error
  */
-char *get_full_path(const char *root_folder, const char *path) {
+char *get_full_path(const char *base_folder, const char *path) {
   // replace characters not allowed in filename (linux and windows)
   char *relative_path = replace_chars(path, PATH_CHAR_FILTER, '-');
   if (relative_path == NULL) {
@@ -49,15 +49,15 @@ char *get_full_path(const char *root_folder, const char *path) {
   while (pos < strlen(relative_path) && relative_path[pos] == '/') { pos++; }
 
   // determine absolute path
-  int absolute_path_len = strlen(root_folder) + strlen(&relative_path[pos]) + 2;
+  int absolute_path_len = strlen(base_folder) + strlen(&relative_path[pos]) + 2;
   char *absolute_path = calloc(absolute_path_len, sizeof(char));
   if (absolute_path == NULL) {
     // unable to allocate memory for absolute path
     free(relative_path);
     return NULL;
   }
-  // create absolute path by concatenating the root folder and the relative path
-  snprintf(absolute_path, absolute_path_len, "%s/%s", root_folder, &relative_path[pos]);
+  // create absolute path by concatenating the base folder and the relative path
+  snprintf(absolute_path, absolute_path_len, "%s/%s", base_folder, &relative_path[pos]);
 
   free(relative_path);
   return absolute_path;

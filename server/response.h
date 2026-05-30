@@ -106,7 +106,7 @@ extern void data_response(const char *data, long size, int mime_type, http_respo
 /**
  * @brief get a response containing the contents of a file
  */
-extern void file_response(const char *path, char *root_folder, http_response *response);
+extern void file_response(const char *path, char *base_folder, http_response *response);
 
 /**
  * @brief get a response containing a default html message

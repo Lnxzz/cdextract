@@ -70,8 +70,8 @@ const char *get_termination_reason(int termination_code) {
 /**
  * @brief initialize the handler and the cdextract library context
  */
-void init_handler(char *device_name, char *root_folder, char *cddb_folder, char *db_filename, int db_backup) {
-  api_init(device_name, root_folder, cddb_folder, db_filename, db_backup);
+void init_handler(char *device_name, char *audio_folder, char *cddb_folder, char *web_folder, char *db_filename, int db_backup) {
+  api_init(device_name, audio_folder, cddb_folder, web_folder, db_filename, db_backup);
 }
 
 /**

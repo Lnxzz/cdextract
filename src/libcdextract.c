@@ -230,7 +230,7 @@ void cde_version() {
 /**
  * @brief intialize the cdextraction library
  */
-void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_root_folder, char *cde_cddb_folder, void(*rpt_callback)(int, char*), void(*progress_callback)(int, int, int, long, float)) {
+void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_audio_folder, char *cde_cddb_folder, char *cde_web_folder, void(*rpt_callback)(int, char*), void(*progress_callback)(int, int, int, long, float)) {
   
   if (cde==NULL) {
     return;
@@ -253,12 +253,12 @@ void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_root_folder
     cde->cdrom_device = calloc(1, sizeof(char));
   }
 
-  if (cde_root_folder != NULL) {
-    cde->root_folder = calloc(strlen(cde_root_folder) + 1, sizeof(char));
-    strcpy(cde->root_folder, cde_root_folder);
+  if (cde_audio_folder != NULL) {
+    cde->audio_folder = calloc(strlen(cde_audio_folder) + 1, sizeof(char));
+    strcpy(cde->audio_folder, cde_audio_folder);
   } else {
-    cde->root_folder = calloc(5, sizeof(char));
-    strcpy(cde->root_folder, "/tmp");
+    cde->audio_folder = calloc(5, sizeof(char));
+    strcpy(cde->audio_folder, "/tmp");
   }
 
   if (cde_cddb_folder != NULL) {
@@ -267,6 +267,14 @@ void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_root_folder
   } else {
     cde->cddb_folder = calloc(10, sizeof(char));
     strcpy(cde->cddb_folder, "/tmp/cddb");
+  }
+
+  if (cde_web_folder != NULL) {
+    cde->web_folder = calloc(strlen(cde_web_folder) + 1, sizeof(char));
+    strcpy(cde->web_folder, cde_web_folder);
+  } else {
+    cde->web_folder = calloc(5, sizeof(char));
+    strcpy(cde->web_folder, "/tmp");
   }
 
   external_rpt_callback_ptr = rpt_callback;
@@ -360,13 +368,17 @@ void cde_cleanup(cde_state *cde) {
       free(cde->cdrom_device);
       cde->cdrom_device = NULL;
     }
-    if (cde->root_folder) {
-      free(cde->root_folder);
-      cde->root_folder = NULL;
+    if (cde->audio_folder) {
+      free(cde->audio_folder);
+      cde->audio_folder = NULL;
     }
     if (cde->cddb_folder) {
       free(cde->cddb_folder);
       cde->cddb_folder = NULL;
+    }
+    if (cde->web_folder) {
+      free(cde->web_folder);
+      cde->web_folder = NULL;
     }
     if (cde->folder) {
       free(cde->folder);
@@ -404,9 +416,9 @@ int cde_set_create_output_path(cde_state *cde, int create_output_path) {
   char *artist_folder = replace_chars(cde->disc_info->d_artist, FILENAME_CHAR_FILTER, '-');
   char *title_folder = replace_chars(cde->disc_info->d_title, FILENAME_CHAR_FILTER, '-');
   if (cde->disc_info->d_year > 0) {
-    snprintf(cde->folder, PATH_MAX, "%s/%s/%s (%d)", cde->root_folder, artist_folder, title_folder, cde->disc_info->d_year);
+    snprintf(cde->folder, PATH_MAX, "%s/%s/%s (%d)", cde->audio_folder, artist_folder, title_folder, cde->disc_info->d_year);
   } else {
-    snprintf(cde->folder, PATH_MAX, "%s/%s/%s", cde->root_folder, artist_folder, title_folder);
+    snprintf(cde->folder, PATH_MAX, "%s/%s/%s", cde->audio_folder, artist_folder, title_folder);
   }
   free(title_folder);
   free(artist_folder);
@@ -966,7 +978,7 @@ void cde_display_disc_info(disc *disc_info) {
  * @brief writes the gathered disc information to a file
  */
 int cde_write_disc_info(cde_state *cde, int overwrite) {
-  return json_write_disc_info(cde->disc_info, cde->root_folder, overwrite, cde->verbose);
+  return json_write_disc_info(cde->disc_info, cde->audio_folder, overwrite, cde->verbose);
 }
 
 /**
@@ -1270,7 +1282,7 @@ void *cde_extract_audio_t(void *state) {
     // set full output filename
     cde_set_track_filename(cde->disc_info, current_track-1, file_suffix);
     char *output_filename = calloc(sizeof(char), PATH_MAX+1);
-    snprintf(output_filename, PATH_MAX, "%s/%s", cde->root_folder, cde->disc_info->tracks[current_track-1].t_filename);
+    snprintf(output_filename, PATH_MAX, "%s/%s", cde->audio_folder, cde->disc_info->tracks[current_track-1].t_filename);
     cde_report(CDE_MSG_TYPE_INFO, "cde_extract_audio: output file %s", output_filename);
 
     // open file as binary write
@@ -1570,7 +1582,7 @@ void *cde_extract_audio_v(void *state) {
     // set full output filename
     cde_set_track_filename(cde->disc_info, current_track-1, file_suffix);
     char *output_filename = calloc(sizeof(char), PATH_MAX+1);
-    snprintf(output_filename, PATH_MAX, "%s/%s", cde->root_folder, cde->disc_info->tracks[current_track-1].t_filename);
+    snprintf(output_filename, PATH_MAX, "%s/%s", cde->audio_folder, cde->disc_info->tracks[current_track-1].t_filename);
     cde_report(CDE_MSG_TYPE_INFO, "cde_extract_audio: output file %s", output_filename);
 
     // open file as binary write
@@ -1865,7 +1877,7 @@ int cde_eject(cde_state *cde) {
  * PRE: cde_state contains a prepared disc information structure
  */
 int cde_write_cue_sheet(cde_state *cde, int overwrite) {
-  return write_cue_sheet(cde->disc_info, cde->root_folder, overwrite, cde->verbose);
+  return write_cue_sheet(cde->disc_info, cde->audio_folder, overwrite, cde->verbose);
 }
 
 /**
@@ -1940,5 +1952,5 @@ int cde_parse_cue_sheet(cde_state *cde, const char *cue, bool download_disc_info
  *        pre: cde_state contains a prepared disc information structure
  */
 int cde_cddb_write_entry(cde_state *cde, int overwrite) {
-  return cddb_write_entry(cde->disc_info, cde->root_folder, overwrite, cde->verbose);
+  return cddb_write_entry(cde->disc_info, cde->audio_folder, overwrite, cde->verbose);
 }

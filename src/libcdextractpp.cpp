@@ -77,7 +77,7 @@ namespace cdextract {
    * 
    * @return cde_result
    */
-  cde_result client::connect(std::string device_name, std::string root_folder, std::string cddb_folder, int virtual_drive, int verbose, int output_type, int coverart, int eject_when_done, int write_json, int write_cue_sheet, int show_disc_info) {
+  cde_result client::connect(std::string device_name, std::string audio_folder, std::string cddb_folder, std::string web_folder, int virtual_drive, int verbose, int output_type, int coverart, int eject_when_done, int write_json, int write_cue_sheet, int show_disc_info) {
 
     if (cde_ && *cde_.get() && (*cde_.get())->status > CDE_STATUS_UNINITIALIZED) {
       // already connected: return connection status
@@ -96,11 +96,11 @@ namespace cdextract {
     } else {
       device_name_ = (char *)calloc(1, sizeof(char));
     }
-    if (root_folder.length() > 0) {
-      root_folder_ = (char *)calloc(root_folder.length()+1, sizeof(char));
-      strcpy(root_folder_, root_folder.c_str());
+    if (audio_folder.length() > 0) {
+      audio_folder_ = (char *)calloc(audio_folder.length()+1, sizeof(char));
+      strcpy(audio_folder_, audio_folder.c_str());
     } else {
-      root_folder_ = (char *)calloc(1, sizeof(char));
+      audio_folder_ = (char *)calloc(1, sizeof(char));
     }
     if (cddb_folder.length() > 0) {
       cddb_folder_ = (char *)calloc(cddb_folder.length()+1, sizeof(char));
@@ -108,10 +108,16 @@ namespace cdextract {
     } else {
       cddb_folder_ = (char *)calloc(1, sizeof(char));
     }
+    if (web_folder.length() > 0) {
+      web_folder_ = (char *)calloc(web_folder.length()+1, sizeof(char));
+      strcpy(web_folder_, web_folder.c_str());
+    } else {
+      web_folder_ = (char *)calloc(1, sizeof(char));
+    }
     verbose_ = verbose;
 
     cde_state *cde_state_p = (cde_state *)calloc(1, sizeof(cde_state));
-    cde_initialize(cde_state_p, device_name_, root_folder_, cddb_folder_, report_callback_, progress_callback_);
+    cde_initialize(cde_state_p, device_name_, audio_folder_, cddb_folder_, web_folder_, report_callback_, progress_callback_);
     cde_set_option(cde_state_p, CDE_OPTION_VERBOSE, verbose);
     cde_set_option(cde_state_p, CDE_OPTION_VIRTUAL_DRIVE, virtual_drive);
     cde_set_option(cde_state_p, CDE_OPTION_OUTPUT_TYPE, output_type);
@@ -330,13 +336,13 @@ namespace cdextract {
   }
 
   /**
-   * @brief get the cdextract root folder
+   * @brief get the cdextract audio base folder
    * 
    * @return int the client status
    */
-  std::string client::get_root_folder() {
-    if (root_folder_) {
-      return root_folder_;
+  std::string client::get_audio_folder() {
+    if (audio_folder_) {
+      return audio_folder_;
     }
     return "";
   }

@@ -125,7 +125,7 @@ extern void cde_version();
 /**
  * @brief intialize the cdextraction library
  */
-extern void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_root_folder, char *cde_cddb_folder, void(*rpt_callback)(int, char*), void(*progress_callback)(int, int, int, long, float));
+extern void cde_initialize(cde_state *cde, char *cde_device_name, char *cde_audio_folder, char *cde_cddb_folder, char *cde_web_folder, void(*rpt_callback)(int, char*), void(*progress_callback)(int, int, int, long, float));
 
 /**
  * @brief intialize the cdextraction library with the given option

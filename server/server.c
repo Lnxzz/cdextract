@@ -49,8 +49,10 @@
 #define DEFAULT_PID_FILE "/tmp/cdextract.pid"         // default pid file for the server process
 #define DEFAULT_LOG_FILE "/tmp/cdextract.log"         // default log file for the server process
 #define DEFAULT_DB_FILE "/tmp/cdextract.db"           // default database filename
-#define DEFAULT_ROOT_FOLDER "/tmp/cdextract"          // default root folder for audio files (/mnt/data/music/flac)
-#define DEFAULT_CDDB_FOLDER "/tmp/cdda"               // default folder to import cddb data (/mnt/temp/cdda)
+#define DEFAULT_AUDIO_FOLDER "/tmp/cdextract"          // default root folder for audio files
+#define DEFAULT_CDDB_FOLDER "/tmp/cdda"               // default folder to import cddb data
+#define DEFAULT_WEB_FOLDER "/tmp/cdextract"           // default folder for serving web files
+
 
 struct MHD_Daemon *http_daemon = NULL;
 
@@ -198,11 +200,14 @@ int main(int argc, char *argv[]) {
   char *db_filename = calloc(strlen(DEFAULT_DB_FILE) + 1, sizeof(char));
   strcpy(db_filename, DEFAULT_DB_FILE);
 
-  char *audio_root_folder = calloc(strlen(DEFAULT_ROOT_FOLDER) + 1, sizeof(char));
-  strcpy(audio_root_folder, DEFAULT_ROOT_FOLDER);
+  char *audio_folder = calloc(strlen(DEFAULT_AUDIO_FOLDER) + 1, sizeof(char));
+  strcpy(audio_folder, DEFAULT_AUDIO_FOLDER);
 
   char *cddb_folder = calloc(strlen(DEFAULT_CDDB_FOLDER) + 1, sizeof(char));
   strcpy(cddb_folder, DEFAULT_CDDB_FOLDER);
+
+  char *web_folder = calloc(strlen(DEFAULT_WEB_FOLDER) + 1, sizeof(char));
+  strcpy(web_folder, DEFAULT_WEB_FOLDER);
 
   char *device_name = NULL;
 
@@ -223,8 +228,11 @@ int main(int argc, char *argv[]) {
       device_name = calloc(strlen(&argv[i][1]), sizeof(char));
       strcpy(device_name, &argv[i][2]);
     } else if (starts_with("-a", argv[i])) {
-      audio_root_folder = realloc(audio_root_folder, strlen(&argv[i][1]) * sizeof(char));
-      strcpy(audio_root_folder, &argv[i][2]);
+      audio_folder = realloc(audio_folder, strlen(&argv[i][1]) * sizeof(char));
+      strcpy(audio_folder, &argv[i][2]);
+    } else if (starts_with("-w", argv[i])) {
+      web_folder = realloc(web_folder, strlen(&argv[i][1]) * sizeof(char));
+      strcpy(web_folder, &argv[i][2]);
     } else if (starts_with("-l", argv[i])) {
       log_filename = calloc(strlen(&argv[i][1]), sizeof(char));
       strcpy(log_filename, &argv[i][2]);
@@ -261,7 +269,8 @@ int main(int argc, char *argv[]) {
       fprintf(stdout, " -c<ccddb folder>   folder to import cddb data; default: '%s'\n", DEFAULT_CDDB_FOLDER);
       fprintf(stdout, " -db<database file> database file; default: '%s'\n", DEFAULT_DB_FILE);
       fprintf(stdout, " -d<drive name>     cd-rom drive name; default auto detect\n");
-      fprintf(stdout, " -a<root folder>    root folder for extracted audio data; default: '%s'\n", DEFAULT_ROOT_FOLDER);
+      fprintf(stdout, " -a<audio folder>   folder for extracted audio data; default: '%s'\n", DEFAULT_AUDIO_FOLDER);
+      fprintf(stdout, " -w<web folder>     folder for serving web files; default: '%s'\n", DEFAULT_WEB_FOLDER);
       fprintf(stdout, " -l<log file>       log file; default log to standard output\n");
       fprintf(stdout, " -pid<pid file>     pid file; default: '%s'\n", DEFAULT_PID_FILE);
       fprintf(stdout, " -p<port>           server port; default port: %d\n", DEFAULT_PORT);
@@ -303,7 +312,7 @@ int main(int argc, char *argv[]) {
   }
 
   // initialize the request/response handler and the cdextract library context
-  init_handler(device_name, audio_root_folder, cddb_folder, db_filename, db_backup);
+  init_handler(device_name, audio_folder, cddb_folder, web_folder, db_filename, db_backup);
   handler_set_option(CDE_OPTION_VERBOSE, verbose);
   handler_set_option(CDE_OPTION_VIRTUAL_DRIVE, CDE_VIRTUAL_DRIVE_OFF);
   handler_set_option(CDE_OPTION_OUTPUT_TYPE, output_type);
@@ -348,8 +357,9 @@ cleanup:
     free(device_name);
   }
   free(db_filename);
+  free(web_folder);
   free(cddb_folder);
-  free(audio_root_folder);
+  free(audio_folder);
   free(pid_file);
   if (log_filename) {
     free(log_filename);
