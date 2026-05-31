@@ -1248,6 +1248,11 @@ void *cde_extract_audio_t(void *state) {
 
   cde_report(CDE_MSG_TYPE_INFO, "cde_extract_audio: extracting data from sector %7ld (track %2d) to sector %7ld (track %2d)", first_sector, first_track, last_sector, last_track);
 
+  // set the tracks to skipped, when actually extracted skipped will be set to not skipped
+  for (int i = 0; i < cde->disc_info->d_tracks; i++) {
+    cde->disc_info->tracks[i].t_skipped = 1;
+  }
+
   // set full paranoia mode, but allow skipping
   int paranoia_mode = PARANOIA_MODE_FULL ^ PARANOIA_MODE_NEVERSKIP;
 
@@ -1416,6 +1421,9 @@ void *cde_extract_audio_t(void *state) {
       }
     }
 
+    // set the skipped indicator for this track
+    cde->disc_info->tracks[current_track-1].t_skipped = skipped_flag;
+
     if (skipped_flag) {
       // remove the file
       cde_report(CDE_MSG_TYPE_INFO, "removing aborted file: %s", output_filename);
@@ -1425,8 +1433,6 @@ void *cde_extract_audio_t(void *state) {
         free(output_filename);
         goto cleanup;
       }
-      // set the skipped indicator for this track
-      cde->disc_info->tracks[current_track-1].t_skipped = 1;
       // make the cursor correct if we have another track
       if (current_track != -1) {
         current_track++;

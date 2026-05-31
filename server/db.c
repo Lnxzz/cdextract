@@ -1298,8 +1298,7 @@ int get_disc_from_database_by_toc(sql_db *db, int include_cover, disc *disc_info
         // error: invalid track number or incorrect track length
         valid = 0;
       }
-      if (track_num == disc_info->d_tracks && valid == 1
-        && total_length == disc_info->d_length) {
+      if (track_num == disc_info->d_tracks && valid == 1 && (total_length - CDE_CD_MSF_OFFSET == disc_info->d_length || total_length == disc_info->d_length)) {
         // disc information completely retrieved and valid
         break;
       }
@@ -2302,6 +2301,11 @@ int update_cddb_entry_in_database(sql_db *db, disc *disc_info, long cddb_id, lon
  * @return 0 if successful; another value indicates an error
  */
 int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id, int lookup_method) {
+
+  // prevent inserting entries with unknown album or artist name
+  if (disc_info == NULL || strcmp(disc_info->d_artist, CDE_UNKNOWN_ARTIST) == 0 || strcmp(disc_info->d_title, CDE_UNKNOWN_ALBUM) == 0) {
+    return DB_ERROR;
+  }
 
   // try to insert the genre_id and insert if not available
   long c_genre_id = get_cddb_genre_id(db, disc_info->d_genre, 1);

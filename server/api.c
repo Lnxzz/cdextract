@@ -593,12 +593,13 @@ void api_get_disc_info(http_request *request, http_response *response) {
 
       // check if we already have the full disc information in the database
       res = get_disc_from_database_by_toc(db, cde->download_coverart, cde->disc_info);
-      if (res == DB_OK && cde->disc_info->cddb_complete == 1 && cde->disc_info->mb_complete == 1) {
+      if (res == DB_OK && ((cde->disc_info->cddb_complete == 1 && cde->disc_info->mb_complete == 1) || cde->disc_info->d_extracted == 1)) {
         // return disc information found in the database
         cde->status = CDE_STATUS_IDLE;
         set_body_from_disc_info(cde->disc_info, response);
         return;
       }
+      cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: unable to get disc from the database by toc; result: %d", res);
 
       // check if we already have the cddb disc information in the database
       long cddb_id = -1;
@@ -633,11 +634,13 @@ void api_get_disc_info(http_request *request, http_response *response) {
           goto get_disc_info_error;
         }
         if (cddb_id < 0) {
-          // store the downloaded disc information in the database
-          if (store_cddb_entry_in_database(db, cde->disc_info, category_id, DB_DUPLICATE_CHECK_LOOKUP) == DB_ERROR) {
-            cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_info: unable to store cddb disc information in the database");
-            res = CDE_ERROR_CDDB_DATA;
-            goto get_disc_info_error;
+          if (strcmp(cde->disc_info->d_artist, CDE_UNKNOWN_ARTIST) != 0 && strcmp(cde->disc_info->d_title, CDE_UNKNOWN_ALBUM) != 0) {
+            // store the downloaded disc information in the database
+            if (store_cddb_entry_in_database(db, cde->disc_info, category_id, DB_DUPLICATE_CHECK_LOOKUP) == DB_ERROR) {
+              cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_info: unable to store cddb disc information in the database");
+              res = CDE_ERROR_CDDB_DATA;
+              goto get_disc_info_error;
+            }
           }
         } else {
           // update the existing disc information in the database
@@ -710,7 +713,7 @@ void api_get_disc_info(http_request *request, http_response *response) {
             cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: get front cover for release id: %s", cde->disc_info->mb_release_id);
             // note: we are only downloading the cover art to memory in this step with MB_COVERART_MEM_ONLY
             //       Covers are only written to file as part of the audio extraction process
-            int r = mb_caa_get_front_cover(cde->disc_info, cde->download_coverart, cde->folder, cde->verbose);
+            int r = mb_caa_get_front_cover(cde->disc_info, MB_COVERART_MEM_ONLY, cde->folder, cde->verbose);
             cde->disc_info->mb_complete = (r == 0 ? 1 : 0);
             res &= r;
           } else {
@@ -733,7 +736,7 @@ void api_get_disc_info(http_request *request, http_response *response) {
             cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: get back cover for release id: %s", cde->disc_info->mb_release_id);
             // note: we are only downloading the cover art to memory in this step with MB_COVERART_MEM_ONLY
             //       Covers are only written to file as part of the audio extraction process
-            int r = mb_caa_get_back_cover(cde->disc_info, cde->download_coverart, cde->folder, cde->verbose);
+            int r = mb_caa_get_back_cover(cde->disc_info, MB_COVERART_MEM_ONLY, cde->folder, cde->verbose);
             res &= r;
           }
         }
@@ -1006,6 +1009,13 @@ void api_update_disc_info(http_request *request, http_response *response) {
       if (store_disc_in_database(db, cde->disc_info, 1) != 0) {
         cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_info: unable to store disc information: (%d) %s", db->status, db->msg);
       }
+
+      // insert or update the cddb information in the database
+      int category_id = get_category_id(db, cde->disc_info->cddb_category);
+      if (store_cddb_entry_in_database(db, cde->disc_info, category_id, DB_DUPLICATE_CHECK_LOOKUP) == DB_ERROR) {
+        cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_info: unable to store cddb disc information in the database");
+      }
+
       // return updated disc information
       api_get_disc_info(request, response);
     } else {
@@ -1289,6 +1299,11 @@ void api_set_extract_disc_progress(int rpt_type, int function, int track, long s
       if (store_disc_in_database(db, cde->disc_info, 1) != 0) {
         cde_report(CDE_MSG_TYPE_ERROR, "api_set_extract_disc_progress: unable to store disc information: (%d) %s", db->status, db->msg);
       }
+      // write the gathered disc information including extract/skip information to a json file
+      if (cde->write_json == CDE_WRITE_JSON_ON) {
+        cde_report(CDE_MSG_TYPE_DEBUG, "api_set_extract_disc_progress: writing disc information");
+        json_write_disc_info(cde->disc_info, cde->folder, true, cde->verbose);
+      }
       break;
     // paranoia specific warnings and errors
     case EXTRACT_CB_FIXUP_EDGE:
@@ -1398,7 +1413,7 @@ void api_extract_disc(http_request *request, http_response *response) {
   // if configured, write the json formatted release information from the coverartarchive (CAA) to file
   if (cde->download_coverart >= MB_COVERART_FULL) {
     cde_report(CDE_MSG_TYPE_INFO, "api_extract_disc: writing coverartarchive release information");
-    mb_caa_get_release_info(cde->disc_info, cde->download_coverart,cde->folder, cde->verbose);
+    mb_caa_get_release_info(cde->disc_info, cde->download_coverart, cde->folder, cde->verbose);
   }
 
   // if configured, write the front and back cover images to file
