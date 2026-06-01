@@ -28,8 +28,8 @@
 
 
 #define CDDB_LOCAL_ENDPOINT "http://localhost:8002/cgi-bin/cddb.cgi"
-#define CDDB_REMOTE_ENDPOINT "https://gnudb.gnudb.org/~cddb/cddb.cgi"
-#define CDDB_HELLO "pi+cdplayer+cddb-tool+0.4.7"
+#define CDDB_REMOTE_ENDPOINT "http://gnudb.gnudb.org/~cddb/cddb.cgi"
+#define CDDB_HELLO "pi+cdextract+cddb-tool+0.4.7"
 
 
 typedef enum cddb_category {

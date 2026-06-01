@@ -60,8 +60,14 @@ target_link_directories(cdextract-server PUBLIC "/usr/local/lib")
 # installation
 install(TARGETS cdextract-server DESTINATION bin)
 install(DIRECTORY DESTINATION var/cdextract DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+if(NOT EXISTS ${CMAKE_INSTALL_RPATH}/../var/cdextract/data)
+# only create the cdda directory if it does not exist yet, otherwise it might cause permission issues if the directory already exists or is a symlink to another location
 install(DIRECTORY DESTINATION var/cdextract/data DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
+if(NOT EXISTS ${CMAKE_INSTALL_RPATH}/../var/cdda)
+# only create the cdda directory if it does not exist yet, otherwise it might cause permission issues if the directory already exists or is a symlink to another location
 install(DIRECTORY DESTINATION var/cdda DIRECTORY_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/favicon.ico" DESTINATION var/cdextract)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover.png" DESTINATION var/cdextract)
 install(FILES "${PROJECT_SOURCE_DIR}/../doc/cover-back.png" DESTINATION var/cdextract)
