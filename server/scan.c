@@ -547,10 +547,10 @@ void scan_audio_folder(char *audio_folder, sql_db *db, int download_coverart, in
           if (res == DB_OK) {
             stored_disc_count++;
             cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: stored disc information: %s; level: %d", p->fts_path, p->fts_level);
-          } else if (res > DB_OK) {
+          } else if (res == DB_ERROR) {
             discarded_disc_count++;
             cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information: (%d) %s (%d) %s", p->fts_level, p->fts_path, db->status, db->msg);
-          } else { // res < DB_OK
+          } else if (res == DB_DUPLICATE || res == DB_NO_UPDATE) {
             already_stored_disc_count++;
             if (verbose) {
               cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: disc information already stored: %s", p->fts_path);
@@ -570,10 +570,10 @@ void scan_audio_folder(char *audio_folder, sql_db *db, int download_coverart, in
           if (res == DB_OK) {
             stored_disc_count++;
             cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: stored disc information from cdextract cue sheet: %s; level: %d", p->fts_path, p->fts_level);
-          } else if (res > DB_OK) {
+          } else if (res == DB_ERROR) {
             discarded_disc_count++;
             cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from cdextract cue sheet: (%d) %s (%d) %s", p->fts_level, p->fts_path, db->status, db->msg);
-          } else { // res < DB_OK
+          } else if (res == DB_DUPLICATE || res == DB_NO_UPDATE) {
             already_stored_disc_count++;
             if (verbose) {
               cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: not storing disc information from cdextract cuesheet; disc information already stored: %s", p->fts_path);
@@ -596,10 +596,10 @@ void scan_audio_folder(char *audio_folder, sql_db *db, int download_coverart, in
               if (res == DB_OK) {
                 stored_disc_count++;
                 cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: stored disc information from cue sheet: %s; level: %d", p->fts_path, p->fts_level);
-              } else if (res > DB_OK) {
+              } else if (res == DB_ERROR) {
                 discarded_disc_count++;
                 cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from cue sheet: (%d) %s (%d) %s", p->fts_level, p->fts_path, db->status, db->msg);
-              } else { // res < DB_OK
+              } else if (res == DB_DUPLICATE || res == DB_NO_UPDATE) {
                 already_stored_disc_count++;
                 if (verbose) {
                   cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: not storing disc information from cuesheet; disc information already stored: %s", p->fts_path);
@@ -629,10 +629,10 @@ void scan_audio_folder(char *audio_folder, sql_db *db, int download_coverart, in
               if (res == DB_OK) {
                 stored_disc_count++;
                 cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: stored disc information from audio files: %s; level: %d", p->fts_path, p->fts_level);
-              } else if (res > DB_OK) {
+              } else if (res == DB_ERROR) {
                 discarded_disc_count++;
                 cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from audio files: (%d) %s (%d) %s", p->fts_level, p->fts_path, db->status, db->msg);
-              } else { // res < DB_OK
+              } else if (res == DB_DUPLICATE || res == DB_NO_UPDATE) {
                 already_stored_disc_count++;
                 if (verbose) {
                   cde_report(CDE_MSG_TYPE_INFO, "scan audio folder: not storing disc information from audio files; disc information already stored: %s", p->fts_path);

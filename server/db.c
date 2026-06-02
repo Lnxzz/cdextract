@@ -668,7 +668,7 @@ long get_genre_id(sql_db *db, const char *genre_name, int insert) {
  * @return disc_id - a value <0 indicates an error
  */
 long get_cover_id(sql_db *db, int cover_type, char *cover_data, int cover_size, int insert) {
-  if (db==NULL || cover_type < 0 || cover_type > 1 || cover_data==NULL || cover_size < 0) {
+  if (db==NULL || cover_type < 0 || cover_type > 1 || (cover_data==NULL && cover_size > 0)) {
     return DB_ERROR;
   }
 

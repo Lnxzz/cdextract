@@ -29,11 +29,11 @@
 
 // result codes to indicate success or failure of the database operation
 // these codes are compatible with the sqlite3 result codes
+#define DB_NO_UPDATE   -4   // database not updated
 #define DB_DUPLICATE   -3   // duplicate record found
 #define DB_NO_RESULT   -2   // no result available
-#define DB_NO_UPDATE   -1   // database not updated
+#define DB_ERROR       -1   // generic error
 #define DB_OK           0   // successful result
-#define DB_ERROR        1   // generic error
 
 
 #define DB_DUPLICATE_CHECK_NONE   0 // no duplicate check, just insert
