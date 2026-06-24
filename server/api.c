@@ -248,14 +248,41 @@ void set_body_from_disc_info(disc *disc_info, http_response *response) {
 void set_body_from_disc_list(disc_list **disc_info_list, http_response *response) {
     char *json_response = calloc(MAX_DISC_LIST_RESPONSE+1, sizeof(char));
     char *json_disc = calloc(MAX_DISC_RESPONSE+1, sizeof(char));
+    char *json_tracks = calloc(MAX_DISC_RESPONSE+1, sizeof(char));
+    char *json_track = calloc(MAX_TRACK_RESPONSE+1, sizeof(char));
     disc *disc_info = pop_disc_list(disc_info_list);
     int cnt = 0;
     while (disc_info != NULL) {
+
+      if (disc_info->d_tracks > 0 && disc_info->tracks != NULL) {
+        for (int i=0; i<disc_info->d_tracks; i++) {
+          snprintf(json_track, MAX_TRACK_RESPONSE,
+                  ",{\"num\": %d, \"length\": %d, \"title\": \"%s\", \"artist\": \"%s\", \"album\": \"%s\", \"genre\": \"%s\", \"year\": %d, \"extended\": \"%s\", \"filename\": \"%s\", \"skipped\":%d}",
+                  disc_info->tracks[i].t_num,
+                  disc_info->tracks[i].t_length,
+                  disc_info->tracks[i].t_title,
+                  disc_info->tracks[i].t_artist,
+                  disc_info->tracks[i].t_album,
+                  disc_info->tracks[i].t_genre,
+                  disc_info->tracks[i].t_year,
+                  disc_info->tracks[i].t_extended,
+                  disc_info->tracks[i].t_filename,
+                  disc_info->tracks[i].t_skipped);
+          if (i==0) {
+            strcpy(json_tracks, &json_track[1]);
+          } else {
+            strcat(json_tracks, json_track);
+          }
+        }
+      } else {
+        strcpy(json_tracks, "");
+      }
+
       snprintf(json_disc, MAX_DISC_RESPONSE,
         ",{\"id\": %lu, \"disc_id\": \"%08x\", \"length\": %d, \"lookup\": \"%016lx\", \"artist\": \"%s\", \"title\": \"%s\", \"genre\": \"%s\", \"year\": %d, \"extended\": \"%s\"," \
         " \"cddb_query\": \"%s\", \"cddb_category\": \"%s\", \"cddb_entry_id\": \"%08x\", \"cddb_disc_id\": \"%08x\", \"cddb_revision\":%d, \"cddb_complete\": %d," \
         " \"mb_query\": \"%s\", \"mb_fuzzy_lookup\": \"%s\", \"mb_disc_id\": \"%s\", \"mb_release_id\": \"%s\"," \
-        " \"mb_front_cover_size\": %d, \"mb_back_cover_size\": %d, \"mb_complete\": %d, \"extracted\": %d, \"track_count\": %d}",
+        " \"mb_front_cover_size\": %d, \"mb_back_cover_size\": %d, \"mb_complete\": %d, \"extracted\": %d, \"track_count\": %d, \"tracks\": [%s]}",
         disc_info->db_id,
         disc_info->d_id, 
         disc_info->d_length,
@@ -279,7 +306,8 @@ void set_body_from_disc_list(disc_list **disc_info_list, http_response *response
         disc_info->mb_back_cover_size,
         disc_info->mb_complete,
         disc_info->d_extracted,
-        disc_info->d_tracks);
+        disc_info->d_tracks,
+        json_tracks);
       strcat(json_response, json_disc);
       cde_free_disc(&disc_info, -1);
       disc_info = pop_disc_list(disc_info_list);
@@ -297,6 +325,8 @@ void set_body_from_disc_list(disc_list **disc_info_list, http_response *response
     response->size = strlen(json_response);
     response->body = calloc(response->size+1, sizeof(char));
     strcpy(response->body, json_response);
+    free(json_track);
+    free(json_tracks);
     free(json_disc);
     free(json_response);
 }
@@ -1672,7 +1702,7 @@ void api_get_audio(http_request *request, http_response *response) {
  * @brief list all stored discs
  */
 void api_list_discs(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s]", cde->audio_folder, request->path);
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->format);
   if (cde == NULL) {
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
@@ -1680,7 +1710,7 @@ void api_list_discs(http_request *request, http_response *response) {
   }
   if (request->limit > 0 && request->limit <= MAX_REQUEST_LIMIT && request->offset >= 0) {
     disc_list *disc_info_list = NULL;
-    if (get_disc_list_from_database(db, request->limit, request->offset, (request->format==1 ? 1 : 0), &disc_info_list) == 0) {
+    if (get_disc_list_from_database(db, request->limit, request->offset, request->format, &disc_info_list) == 0) {
       set_body_from_disc_list(&disc_info_list, response);
       free_disc_list(&disc_info_list);
       return;

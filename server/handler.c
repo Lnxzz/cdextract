@@ -153,6 +153,10 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
       } else if (strcmp(format, "tracks") == 0) {
         con_request->format = 1; // disc and track information
       }
+      // alternatively, check if format is specified as a number (0, 1 or 2)
+      else {
+        con_request->format = atoi(format);
+      }
     }
     const char *return_default = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "default");
     if (return_default != NULL) {

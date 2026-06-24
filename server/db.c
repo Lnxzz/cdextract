@@ -1111,41 +1111,42 @@ int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_t
         disc_info->tracks = (track *)calloc(disc_info->d_tracks, sizeof(track));
 
         // get track information
-        db->status = sqlite3_prepare_v2(db->database, db_select_track_details, -1, &statement, NULL);
+        sqlite3_stmt *statement2 = NULL;
+        db->status = sqlite3_prepare_v2(db->database, db_select_track_details, -1, &statement2, NULL);
         if (db->status != DB_OK) {
           set_error_message(db);
-          sqlite3_finalize(statement);
+          sqlite3_finalize(statement2);
           return DB_ERROR;
         }
         // bind disc_id parameter
-        sqlite3_bind_int64(statement, 1, disc_info->db_id);
+        sqlite3_bind_int64(statement2, 1, disc_info->db_id);
         // execute statement and get result
         int t_idx = 0;
         while (1) {
-          db->status = sqlite3_step(statement);
+          db->status = sqlite3_step(statement2);
           if (db->status == SQLITE_ROW) {
             // disc_id (col:0)
-            disc_info->tracks[t_idx].t_num = sqlite3_column_int(statement, 1);
-            disc_info->tracks[t_idx].t_length = sqlite3_column_int(statement, 2);
-            set_string(&(disc_info->tracks[t_idx].t_title), (const char*)sqlite3_column_text(statement, 3));
-            set_string(&(disc_info->tracks[t_idx].t_artist), (const char*)sqlite3_column_text(statement, 4));
-            set_string(&(disc_info->tracks[t_idx].t_album), (const char*)sqlite3_column_text(statement, 5));
-            set_string(&(disc_info->tracks[t_idx].t_genre), (const char*)sqlite3_column_text(statement, 6));
-            disc_info->tracks[t_idx].t_year = sqlite3_column_int(statement, 7);
-            set_string(&(disc_info->tracks[t_idx].t_extended), (const char*)sqlite3_column_text(statement, 8));
-            set_string(&(disc_info->tracks[t_idx].t_filename), (const char*)sqlite3_column_text(statement, 9));
-            disc_info->tracks[t_idx].t_skipped = sqlite3_column_int(statement, 10);
+            disc_info->tracks[t_idx].t_num = sqlite3_column_int(statement2, 1);
+            disc_info->tracks[t_idx].t_length = sqlite3_column_int(statement2, 2);
+            set_string(&(disc_info->tracks[t_idx].t_title), (const char*)sqlite3_column_text(statement2, 3));
+            set_string(&(disc_info->tracks[t_idx].t_artist), (const char*)sqlite3_column_text(statement2, 4));
+            set_string(&(disc_info->tracks[t_idx].t_album), (const char*)sqlite3_column_text(statement2, 5));
+            set_string(&(disc_info->tracks[t_idx].t_genre), (const char*)sqlite3_column_text(statement2, 6));
+            disc_info->tracks[t_idx].t_year = sqlite3_column_int(statement2, 7);
+            set_string(&(disc_info->tracks[t_idx].t_extended), (const char*)sqlite3_column_text(statement2, 8));
+            set_string(&(disc_info->tracks[t_idx].t_filename), (const char*)sqlite3_column_text(statement2, 9));
+            disc_info->tracks[t_idx].t_skipped = sqlite3_column_int(statement2, 10);
             t_idx++;
           } else if (db->status == SQLITE_DONE) {
             break;
           } else {
             set_error_message(db);
-            sqlite3_finalize(statement);
+            sqlite3_finalize(statement2);
             return DB_ERROR;
           }
         }
         // delete statement
-        db->status = sqlite3_finalize(statement);
+        db->status = sqlite3_finalize(statement2);
       } else {
         disc_info->tracks = NULL;
       }
