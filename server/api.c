@@ -1680,7 +1680,7 @@ void api_list_discs(http_request *request, http_response *response) {
   }
   if (request->limit > 0 && request->limit <= MAX_REQUEST_LIMIT && request->offset >= 0) {
     disc_list *disc_info_list = NULL;
-    if (get_disc_list_from_database(db, request->limit, request->offset, &disc_info_list) == 0) {
+    if (get_disc_list_from_database(db, request->limit, request->offset, (request->format==1 ? 1 : 0), &disc_info_list) == 0) {
       set_body_from_disc_list(&disc_info_list, response);
       free_disc_list(&disc_info_list);
       return;

@@ -620,6 +620,13 @@ paths:
             type: integer
             format: int32
             minimum: 0
+        - name: format
+          in: query
+          description: "The format of the stored disc information list; discs=disc information, tracks=disc and track information (default disc information only)"
+          required: false
+          schema:
+            type: string
+            enum: [discs, tracks]  
       responses:
         200:
           description: "An paged array of discs."

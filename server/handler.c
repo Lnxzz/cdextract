@@ -147,6 +147,12 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
       } else if (strcmp(format, "pcm") == 0) {
         con_request->format = 2; // pcm
       }
+      // check if format is disc information only or include track information as well
+      else if (strcmp(format, "discs") == 0) {
+        con_request->format = 0; // disc information only
+      } else if (strcmp(format, "tracks") == 0) {
+        con_request->format = 1; // disc and track information
+      }
     }
     const char *return_default = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "default");
     if (return_default != NULL) {

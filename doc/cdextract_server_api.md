@@ -1248,12 +1248,13 @@ Get the information of the specified disc.
 #### query parameters: 
 * limit - The number of items to return at one time (max. 100)
 * offset - Where to start with returning items (default 0)
+* format - The format of the stored disc information list; discs=disc information, tracks=disc and track information (default disc information only)
 
 #### example:
 **request**
 
 ``
-wget --method=GET http://localhost:8001/v1/discs?limit=100&offset=0
+wget --method=GET http://localhost:8001/v1/discs?limit=100&offset=0&format=discs
 ``
 
 **response**

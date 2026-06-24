@@ -67,7 +67,7 @@ int init_request(const char *method, const char *path, http_request *request) {
   request->limit = MAX_REQUEST_LIMIT; // default limit for the number of items to return
   request->offset = 0;                // default offset for the number of items to skip
   request->track = 1;                 // default track number for the audio data request
-  request->format = -1;               // no default format for audio data (wav=0, flac=1, pcm=2)
+  request->format = -1;               // no default format for audio data (wav=0, flac=1, pcm=2) or disc/track list information (disc=0, include tracks=1)
   request->return_default = 0;        // default to not return default response if requested resource is not found
   request->stream = 0;                // default to not stream the response
   request->overwrite = 0;
