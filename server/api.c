@@ -246,11 +246,17 @@ void set_body_from_disc_info(disc *disc_info, http_response *response) {
  * @param response 
  */
 void set_body_from_disc_list(disc_list **disc_info_list, http_response *response) {
-    char *json_response = calloc(MAX_DISC_LIST_RESPONSE+1, sizeof(char));
-    char *json_disc = calloc(MAX_DISC_RESPONSE+1, sizeof(char));
-    char *json_tracks = calloc(MAX_DISC_RESPONSE+1, sizeof(char));
-    char *json_track = calloc(MAX_TRACK_RESPONSE+1, sizeof(char));
     disc *disc_info = pop_disc_list(disc_info_list);
+    char *json_response = NULL; 
+    if (disc_info != NULL && disc_info->tracks != NULL) {
+      json_response = calloc(MAX_DISC_RESPONSE * MAX_REQUEST_LIMIT + 1, sizeof(char));
+    } else {
+      json_response = calloc(MAX_DISC_LIST_RESPONSE + 1, sizeof(char));
+    }
+    char *json_disc = calloc(MAX_DISC_RESPONSE + 1, sizeof(char));
+    char *json_tracks = calloc(MAX_DISC_RESPONSE + 1, sizeof(char));
+    char *json_track = calloc(MAX_TRACK_RESPONSE + 1, sizeof(char));
+    
     int cnt = 0;
     while (disc_info != NULL) {
 

@@ -128,14 +128,27 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
     const char *limit = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "limit");
     if (limit != NULL) {
       con_request->limit = atoi(limit);
+      if (con_request->limit < 1) {
+        con_request->limit = 1;
+      } else if (con_request->limit > MAX_REQUEST_LIMIT) {
+        con_request->limit = MAX_REQUEST_LIMIT;
+      }
     }
     const char *offset = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "offset");
     if (offset != NULL) {
       con_request->offset = atoi(offset);
+      if (con_request->limit < 0) {
+        con_request->limit = 0;
+      }
     }
     const char *track = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "track");
     if (track != NULL) {
       con_request->track = atoi(track);
+      if (con_request->track < 0) {
+        con_request->track = 0;
+      } else if (con_request->track > CDE_MAX_TRACKS) {
+        con_request->track = CDE_MAX_TRACKS;
+      }
     }
     const char *format = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "format");
     if (format != NULL) {
@@ -156,6 +169,11 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
       // alternatively, check if format is specified as a number (0, 1 or 2)
       else {
         con_request->format = atoi(format);
+        if (con_request->format < 0) {
+          con_request->format = 0;
+        } else if (con_request->format > 2) {
+          con_request->format = 2;
+        }
       }
     }
     const char *return_default = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "default");
