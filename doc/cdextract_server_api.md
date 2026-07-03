@@ -1227,7 +1227,7 @@ Content-Type: application/json
 ## discs
 The discs endpoint controls stored disc information
 Supported disc operations are:
-* **GET /discs** - get a list of stored discs
+* **GET /discs** - get a (filtered) list of stored discs
 * **GET /discs/rescan** - get the discs database rescan status
 * **POST /discs/rescan** - rescan the stored discs on the filesystem to update the database
 * **GET /discs/backup** - get the discs database backup status
@@ -1241,20 +1241,22 @@ Supported disc operations are:
 * **GET /discs/{discId}/audio** - get the audio data of the specified disc (and track)
 
 ### get list of stored discs
-Get the information of the specified disc.
+Get a (filtered) list of stored discs.
 
-#### end point: `http://<host>:<port>/v1/discs/{discId}`
+#### end point: `http://<host>:<port>/v1/discs`
 #### request method: **GET**
 #### query parameters: 
 * limit - The number of items to return at one time (max. 100)
 * offset - Where to start with returning items (default 0)
-* format - The format of the stored disc information list; discs=disc information, tracks=disc and track information (default disc information only)
+* search - Search term for filtering discs
+* tag - The tag to filter the discs by (disc, track, artist, genre, year)
+* format - The format of the stored disc information list; disc=disc information, track=disc and track information (default disc information only)
 
 #### example:
 **request**
 
 ``
-wget --method=GET http://localhost:8001/v1/discs?limit=100&offset=0&format=discs
+wget --method=GET http://localhost:8001/v1/discs?limit=100&offset=0&format=disc
 ``
 
 **response**

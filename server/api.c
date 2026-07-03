@@ -542,12 +542,15 @@ void api_set_option(int option, int varg) {
  * @brief get information of the connected cdrom drive
  */
 void api_get_drive_info(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_drive_info: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL || cde->status == CDE_STATUS_UNINITIALIZED) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_drive_info: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_drive_info: [%s][%s]", cde->audio_folder, request->path);
+
   set_body_from_drive_info(cde, response);
 }
 
@@ -555,13 +558,16 @@ void api_get_drive_info(http_request *request, http_response *response) {
  * @brief open the connection with cdrom drive
  */
 void api_open_drive(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_open_drive: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_open_drive: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_open_drive: [%s][%s]", cde->audio_folder, request->path);
+  
   if (cde->status == CDE_STATUS_INITIALIZED) {
     int res;
     if ((res = cde_open_drive(cde)) != 0) {
@@ -581,13 +587,16 @@ void api_open_drive(http_request *request, http_response *response) {
  * @brief close the connection with cdrom drive
  */
 void api_close_drive(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_close_drive: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_close_drive: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_close_drive: [%s][%s]", cde->audio_folder, request->path);
+
   // close connection and cleanup
   if (cde->status == CDE_STATUS_IDLE || cde->status == CDE_STATUS_INITIALIZED) {
     if (cde_close_drive(cde) == CDE_OK) {
@@ -609,16 +618,17 @@ void api_close_drive(http_request *request, http_response *response) {
  * @brief get information of the disc in the cdrom drive
  */
 void api_get_disc_info(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: [%s][%s]", cde->audio_folder, request->path);
-  int res = CDE_OK;
-
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_info: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
-  
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_info: [%s][%s]", cde->audio_folder, request->path);
+
+  int res = CDE_OK;
   disc *cddb_disc_info = NULL;
 
   if (cde->status == CDE_STATUS_IDLE && (cde->disc_info == NULL || cde->disc_info->cddb_complete == 0 || cde->disc_info->mb_complete == 0)) {
@@ -825,13 +835,16 @@ get_disc_info_error:
  * @brief edit the information of the disc in the cdrom drive
  */
 void api_update_disc_info(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_info: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_info: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_info: [%s][%s]", cde->audio_folder, request->path);
+
   // check for not downloading or extracting data
   if (cde->status > CDE_STATUS_IDLE) {
     response->code = RESOURCE_LOCKED;
@@ -1112,13 +1125,16 @@ void api_update_disc_info(http_request *request, http_response *response) {
  * @brief insert a disc into the cdrom drive
  */
 void api_insert_disc(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_insert_disc: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_insert_disc: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_insert_disc: [%s][%s]", cde->audio_folder, request->path);
+
   // check for not downloading or extracting data
   if (cde->status > CDE_STATUS_IDLE) {
     response->code = RESOURCE_LOCKED;
@@ -1144,13 +1160,16 @@ void api_insert_disc(http_request *request, http_response *response) {
  * @brief eject the disc from the cdrom drive
  */
 void api_eject_disc(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_eject_disc: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_eject_disc: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_eject_disc: [%s][%s]", cde->audio_folder, request->path);
+  
   // check for not downloading or extracting data
   if (cde->status > CDE_STATUS_IDLE) {
     response->code = RESOURCE_LOCKED;
@@ -1179,13 +1198,16 @@ void api_eject_disc(http_request *request, http_response *response) {
  * @brief get the audio extraction progress status
  */
 void api_get_extract_disc_progress(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_extract_disc_progress: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_extract_disc_progress: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_extract_disc_progress: [%s][%s]", cde->audio_folder, request->path);
+  
   // check if connection opened with drive and disc
   if (cde->status < CDE_STATUS_IDLE || cde->drv == NULL || cde->drv->opened == 0) {
     response->code = NOT_FOUND;
@@ -1398,14 +1420,16 @@ void api_set_extract_disc_progress(int rpt_type, int function, int track, long s
  * @brief extract the audio from the disc in the cdrom drive
  */
 void api_extract_disc(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_extract_disc: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_extract_disc: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
 
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_extract_disc: [%s][%s]", cde->audio_folder, request->path);
+  
   // check if connection opened with drive and disc
   if (cde->status < CDE_STATUS_IDLE || cde->drv == NULL || cde->drv->opened == 0) {
     response->code = NOT_FOUND;
@@ -1500,13 +1524,16 @@ void api_extract_disc(http_request *request, http_response *response) {
  * @brief cancel the audio extraction from disc
  */
 void api_cancel_disc(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_cancel_disc: [%s][%s]", cde->audio_folder, request->path);
   // check for cdextract context
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_cancel_disc: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_cancel_disc: [%s][%s]", cde->audio_folder, request->path);
+
   // check if connection opened with drive and disc
   if (cde->status < CDE_STATUS_IDLE || cde->drv == NULL || cde->drv->opened == 0) {
     response->code = NOT_FOUND;
@@ -1537,12 +1564,15 @@ void api_cancel_disc(http_request *request, http_response *response) {
  * @brief get the front cover of the disc in the cdrom drive
  */
 void api_get_disc_front_cover(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_front_cover: [%s][%s]", cde->web_folder, request->path);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_front_cover: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_front_cover: [%s][%s]", cde->web_folder, request->path);
+
   if (cde->status >= CDE_STATUS_IDLE && cde->disc_info!=NULL && cde->disc_info->mb_front_cover_size>0) {
     data_response(cde->disc_info->mb_front_cover, cde->disc_info->mb_front_cover_size, MIME_TYPE_JPEG, response);
     return;
@@ -1559,12 +1589,15 @@ void api_get_disc_front_cover(http_request *request, http_response *response) {
  * @brief update the front cover of the disc in the cdrom drive
  */
 void api_update_disc_front_cover(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_front_cover: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_front_cover: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_front_cover: [%s][%s]", cde->audio_folder, request->path);
+
   // check if request data is available
   if (request->size < 140 || request->data == NULL) {
     response->code = BAD_REQUEST;
@@ -1610,12 +1643,15 @@ void api_update_disc_front_cover(http_request *request, http_response *response)
  * @brief get the back cover of the disc in the cdrom drive
  */
 void api_get_disc_back_cover(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_back_cover: [%s][%s]", cde->web_folder, request->path);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_back_cover: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_back_cover: [%s][%s]", cde->web_folder, request->path);
+
   if (cde->status >= CDE_STATUS_IDLE && cde->disc_info!=NULL && cde->disc_info->mb_back_cover_size>0) {
     data_response(cde->disc_info->mb_back_cover, cde->disc_info->mb_back_cover_size, MIME_TYPE_JPEG, response);
     return;
@@ -1632,12 +1668,15 @@ void api_get_disc_back_cover(http_request *request, http_response *response) {
  * @brief update the back cover of the disc in the cdrom drive
  */
 void api_update_disc_back_cover(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_back_cover: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_back_cover: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_back_cover: [%s][%s]", cde->audio_folder, request->path);
+  
   // check if request data is available
   if (request->size < 140 || request->data == NULL) {
     response->code = BAD_REQUEST;
@@ -1683,12 +1722,15 @@ void api_update_disc_back_cover(http_request *request, http_response *response) 
  * @brief get the audio data of the disc (and track) in the cdrom drive
  */
 void api_get_audio(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_audio: [%s][%s][%s][%d][%d]", cde->audio_folder, request->path, request->resource_id, request->track, request->format);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_audio: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_audio: [%s][%s][%s][%d][%d]", cde->audio_folder, request->path, request->resource_id, request->track, request->format);
+
   // check if current disc has a filename for the requested track
   if (cde->disc_info != NULL && cde->disc_info->d_tracks >= request->track &&
       request->track > 0 && cde->disc_info->tracks != NULL &&
@@ -1708,19 +1750,28 @@ void api_get_audio(http_request *request, http_response *response) {
  * @brief list all stored discs
  */
 void api_list_discs(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->format);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  if (request->search != NULL && strlen(request->search) > 0) {
+    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%s][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->search, request->tag, request->format);
+  } else {
+    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->tag, request->format);
+  }
+    
   if (request->limit > 0 && request->limit <= MAX_REQUEST_LIMIT && request->offset >= 0) {
     disc_list *disc_info_list = NULL;
-    if (get_disc_list_from_database(db, request->limit, request->offset, request->format, &disc_info_list) == 0) {
+    // search for discs (and optionally tracks) in the database with the given search string and tag if present
+    if (get_disc_list_from_database(db, request->limit, request->offset, request->search, request->tag, request->format, &disc_info_list) == 0) {
       set_body_from_disc_list(&disc_info_list, response);
       free_disc_list(&disc_info_list);
       return;
     }
+    
     cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: unable to get disc list from database: (%d) %s", db->status, db->msg);
     if (disc_info_list != NULL) {
       // free the disc list if it was allocated
@@ -1735,12 +1786,15 @@ void api_list_discs(http_request *request, http_response *response) {
  * @brief get the rescan status
  */
 void api_rescan_status(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_rescan_status: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL || db == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_rescan_status: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_rescan_status: [%s][%s]", cde->audio_folder, request->path);
+  
   // create json response by returning the database mode (including the rescan status)
   set_body_from_database_mode(response);
 }
@@ -1749,12 +1803,15 @@ void api_rescan_status(http_request *request, http_response *response) {
  * @brief rescan the stored discs on the filesystem to update the database
  */
 void api_rescan_discs(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_rescan_discs: [%s][%s][%d]", cde->audio_folder, request->path, request->purge);
   if (cde == NULL || db == NULL || db->mode == DB_CLOSED) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_rescan_discs: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_rescan_discs: [%s][%s][%d]", cde->audio_folder, request->path, request->purge);
+  
   if (db->mode == DB_RESCAN) {
     // rescan already in progress
     response->code = NO_CONTENT;
@@ -1779,12 +1836,15 @@ void api_rescan_discs(http_request *request, http_response *response) {
  * @brief get the discs database rebuild status
  */
 void api_rebuild_status(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_rebuild_status: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL || db == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_rebuild_status: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_rebuild_status: [%s][%s]", cde->audio_folder, request->path);
+  
   // create json response by returning the database mode (including the rebuild status)
   set_body_from_database_mode(response);
 }
@@ -1793,12 +1853,15 @@ void api_rebuild_status(http_request *request, http_response *response) {
  * @brief rebuild the database with stored discs
  */
 void api_rebuild_discs(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_rebuild_discs: [%s][%s][%d]", cde->audio_folder, request->path, request->purge);
   if (cde == NULL || db == NULL || db->mode == DB_CLOSED) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_rebuild_discs: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_rebuild_discs: [%s][%s][%d]", cde->audio_folder, request->path, request->purge);
+  
   if (db->mode == DB_REBUILD) {
     // rescan already in progress
     response->code = NO_CONTENT;
@@ -1823,12 +1886,15 @@ void api_rebuild_discs(http_request *request, http_response *response) {
  * @brief get the database backup status
  */
 void api_backup_status(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_backup_status: [%s][%s]", cde->audio_folder, request->path);
   if (cde == NULL || db == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_backup_status: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_backup_status: [%s][%s]", cde->audio_folder, request->path);
+  
   // create json response by returning the database mode (including the backup status)
   set_body_from_database_mode(response);
 }
@@ -1837,12 +1903,15 @@ void api_backup_status(http_request *request, http_response *response) {
  * @brief backup the database with stored discs
  */
 void api_backup_discs(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_backup_discs: [%s][%s]\n", cde->audio_folder, request->path);
   if (cde == NULL || db == NULL || db->mode == DB_CLOSED) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_backup_discs: cde or db context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_backup_discs: [%s][%s]\n", cde->audio_folder, request->path);
+  
   if (db->mode == DB_BACKUP) {
     // backup already in progress
     response->code = NO_CONTENT;
@@ -1863,12 +1932,15 @@ void api_backup_discs(http_request *request, http_response *response) {
  * @brief get information of the specified stored disc
  */
 void api_get_disc_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_by_id: [%s][%s][%s]\n", cde->audio_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_by_id: [%s][%s][%s]\n", cde->audio_folder, request->path, request->resource_id);
+  
   disc *disc_info = NULL;
   if (get_disc_from_database(db, request->resource_id, 0, &disc_info) == 0) {
     set_body_from_disc_info(disc_info, response);
@@ -1886,12 +1958,15 @@ void api_get_disc_by_id(http_request *request, http_response *response) {
  * @brief edit the information of the specified disc
  */
 void api_update_disc_info_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_info_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_info_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_info_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
+  
   // check if request data is available
   if (request->size <= 0 || request->data == NULL) {
     response->code = BAD_REQUEST;
@@ -2166,12 +2241,15 @@ void api_update_disc_info_by_id(http_request *request, http_response *response) 
  * @brief get the front cover of the specified disc
  */
 void api_get_disc_front_cover_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_front_cover_by_id: [%s][%s][%s]", cde->web_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_front_cover_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+  
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_front_cover_by_id: [%s][%s][%s]", cde->web_folder, request->path, request->resource_id);
+  
   char *cover_data = NULL;
   int cover_size = 0;
   if (get_cover_from_database(db, request->resource_id, 0, &cover_data, &cover_size) == 0 && cover_size > 0) {
@@ -2196,12 +2274,15 @@ void api_get_disc_front_cover_by_id(http_request *request, http_response *respon
  * @brief update the front cover of the specified disc
  */
 void api_update_disc_front_cover_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_front_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_front_cover_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_front_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
+  
   // check if request data is available
   if (request->size < 140 || request->data == NULL || request->resource_id == NULL) {
     response->code = BAD_REQUEST;
@@ -2224,12 +2305,15 @@ void api_update_disc_front_cover_by_id(http_request *request, http_response *res
  * @brief get the back cover of the specified disc
  */
 void api_get_disc_back_cover_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_back_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_disc_back_cover_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_disc_back_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
+  
   char *cover_data = NULL;
   int cover_size = 0;
   if (get_cover_from_database(db, request->resource_id, 1, &cover_data, &cover_size) == 0 && cover_size > 0) {
@@ -2254,12 +2338,15 @@ void api_get_disc_back_cover_by_id(http_request *request, http_response *respons
  * @brief update the back cover of the specified disc
  */
 void api_update_disc_back_cover_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_back_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_update_disc_back_cover_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_update_disc_back_cover_by_id: [%s][%s][%s]", cde->audio_folder, request->path, request->resource_id);
+  
   // check if request data is available
   if (request->size < 140 || request->data == NULL || request->resource_id == NULL) {
     response->code = BAD_REQUEST;
@@ -2282,12 +2369,15 @@ void api_update_disc_back_cover_by_id(http_request *request, http_response *resp
  * @brief get the audio data of the specified disc (and track)
  */
 void api_get_audio_by_id(http_request *request, http_response *response) {
-  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_audio_by_id: [%s][%s][%s][%d][%d]", cde->audio_folder, request->path, request->resource_id, request->track, request->format);
   if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_audio_by_id: cde context unavailable");
     response->code = SERVICE_UNAVAILABLE;
     api_default_response(request, response);
     return;
   }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_audio_by_id: [%s][%s][%s][%d][%d]", cde->audio_folder, request->path, request->resource_id, request->track, request->format);
+  
   disc *disc_info = NULL;
   if (get_disc_from_database(db, request->resource_id, 0, &disc_info) == 0) {
     // check if retrieved disc information has a filename for the requested track
@@ -2749,6 +2839,7 @@ finalize_response:
  */
 void api_file_response(http_request *request, http_response *response) {
   if (cde == NULL) {
+    // cde context unavailable
     default_response(SERVICE_UNAVAILABLE, NULL, response);
     return;
   }

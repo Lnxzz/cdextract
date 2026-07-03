@@ -67,6 +67,8 @@ int init_request(const char *method, const char *path, http_request *request) {
   request->limit = MAX_REQUEST_LIMIT; // default limit for the number of items to return
   request->offset = 0;                // default offset for the number of items to skip
   request->track = 1;                 // default track number for the audio data request
+  request->search = NULL;             // default search string for the request
+  request->tag = -1;                  // no default tag to filter the discs by (0=disc, 1=track, 2=artist, 3=genre, 4=year)
   request->format = -1;               // no default format for audio data (wav=0, flac=1, pcm=2) or disc/track list information (disc=0, include tracks=1)
   request->return_default = 0;        // default to not return default response if requested resource is not found
   request->stream = 0;                // default to not stream the response
@@ -145,6 +147,10 @@ int store_request_data(const char *data, size_t size, http_request *request) {
  */
 void free_request(http_request *request) {
   if (request != NULL) {
+    if (request->search != NULL) {
+      free(request->search);
+      request->search = NULL;
+    }
     if (request->resource_id != NULL) {
       free(request->resource_id);
       request->resource_id = NULL;

@@ -150,6 +150,41 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
         con_request->track = CDE_MAX_TRACKS;
       }
     }
+    const char *search = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "search");
+    if (search != NULL && strlen(search) > 0) {
+      if (con_request->search != NULL) {
+        free(con_request->search);
+      }
+      con_request->search = calloc(strlen(search) + 1, sizeof(char));
+      if (con_request->search == NULL) {
+        return MHD_NO; // allocation failed
+      }
+      strncpy(con_request->search, search, strlen(search));
+    }
+    const char *tag = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "tag");
+    if (tag != NULL) {
+      // check if tag is one of the valid values (disc, track, artist, genre, year)
+      if (strcmp(tag, "disc") == 0) {
+        con_request->tag = 0;
+      } else if (strcmp(tag, "track") == 0) {
+        con_request->tag = 1;
+      } else if (strcmp(tag, "artist") == 0) {
+        con_request->tag = 2;
+      } else if (strcmp(tag, "genre") == 0) {
+        con_request->tag = 3;
+      } else if (strcmp(tag, "year") == 0) {
+        con_request->tag = 4;
+      }
+      // alternatively, check if tag is specified as a number (0..4)
+      else {
+        con_request->tag = atoi(tag);
+        if (con_request->tag < 0) {
+          con_request->tag = -1;
+        } else if (con_request->tag > 4) {
+          con_request->tag = 4;
+        }
+      }
+    }
     const char *format = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "format");
     if (format != NULL) {
       // check if format is flac, wav or pcm
@@ -161,9 +196,9 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
         con_request->format = 2; // pcm
       }
       // check if format is disc information only or include track information as well
-      else if (strcmp(format, "discs") == 0) {
+      else if (strcmp(format, "disc") == 0) {
         con_request->format = 0; // disc information only
-      } else if (strcmp(format, "tracks") == 0) {
+      } else if (strcmp(format, "track") == 0) {
         con_request->format = 1; // disc and track information
       }
       // alternatively, check if format is specified as a number (0, 1 or 2)
@@ -176,6 +211,7 @@ enum MHD_Result request_handler(void *cls, struct MHD_Connection *conn, const ch
         }
       }
     }
+
     const char *return_default = MHD_lookup_connection_value(conn, MHD_GET_ARGUMENT_KIND, "default");
     if (return_default != NULL) {
       // check if default is set to 'true'

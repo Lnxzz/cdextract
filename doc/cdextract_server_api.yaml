@@ -620,13 +620,28 @@ paths:
             type: integer
             format: int32
             minimum: 0
-        - name: format
+        - name: search
           in: query
-          description: "The format of the stored disc information list; discs=disc information, tracks=disc and track information (default disc information only)"
+          description: "Search term for filtering discs"
           required: false
           schema:
             type: string
-            enum: [discs, tracks]  
+            minLength: 0
+            maxLength: 64
+        - name: tag
+          in: query
+          description: "The tag to filter the discs by (disc title, track title, artist, genre, year)"
+          required: false
+          schema:
+            type: string
+            enum: [disc, track, artist, genre, year]
+        - name: format
+          in: query
+          description: "The format of the stored disc information list; disc=disc information, track=disc and track information (default disc information only)"
+          required: false
+          schema:
+            type: string
+            enum: [disc, track]
       responses:
         200:
           description: "An paged array of discs."

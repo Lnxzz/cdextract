@@ -60,7 +60,9 @@ typedef struct http_request {
   int limit;              // limit for the number of items to return
   int offset;             // offset for the number of items to skip
   int track;              // track number for the audio data request
-  int format;             // format of the requested audio data (wav=0, flac=1, pcm=2) or disc/track list information (disc=0, include tracks=1)
+  char *search;           // search string for the request
+  int tag;                // tag to filter the discs by (0=disc, 1=track, 2=artist, 3=genre, 4=year)
+  int format;             // format of the requested audio data (0=wav, 1=flac, 2=pcm) or disc/track list information (0=disc, 1=disc+track)
   int return_default;     // indicator to return default response if requested resource is not found
   int stream;             // indicator to stream the response
   int overwrite;          // indicator to enable/disable overwrite of existing data

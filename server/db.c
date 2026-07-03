@@ -1054,7 +1054,7 @@ long get_track_count(sql_db *db, const char *resource_id, int *track_count) {
 }
 
 /**
- * @brief get the disc information linked to the given resource id from the database
+ * @brief get a list of disc and optional track information from the database
  * @param db database structure
  * @param limit the limit of the list
  * @param offset the offset to start the list
@@ -1062,11 +1062,11 @@ long get_track_count(sql_db *db, const char *resource_id, int *track_count) {
  * @param disc_info_list output disc information list structure
  * @return 0 if successful; another value indicates an error
  */
-int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list) {
+/*int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list) {
   if (db==NULL || offset<0 || limit<0) {
     return DB_ERROR;
   }
-  // get disc information
+  // prepare get disc list statement
   sqlite3_stmt *statement = NULL;
   db->status = sqlite3_prepare_v2(db->database, db_select_disc_list, -1, &statement, NULL);
   if (db->status != DB_OK) {
@@ -1141,6 +1141,7 @@ int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_t
             break;
           } else {
             set_error_message(db);
+            sqlite3_finalize(statement);
             sqlite3_finalize(statement2);
             return DB_ERROR;
           }
@@ -1162,7 +1163,232 @@ int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_t
   // delete statement
   db->status = sqlite3_finalize(statement);
 
-  // done. disc and track information is retrieved
+  // done. disc and (optional) track information is retrieved
+  return DB_OK;
+}*/
+
+/**
+ * @brief get a list of disc and optional track information filtered by the given criteria from the database
+ * @param db database structure
+ * @param limit the limit of the list
+ * @param offset the offset to start the list
+ * @param search the search string to filter the list
+ * @param tag the tag to filter the list (0=disc, 1=track, 2=artist, 3=genre, 4=year)
+ * @param include_tracks indicator to include the track data
+ * @param disc_info_list output disc information list structure
+ * @return 0 if successful; another value indicates an error
+ */
+int get_disc_list_from_database(sql_db *db, int limit, int offset, const char *search, int tag, int include_tracks, disc_list **disc_info_list) {
+  if (db==NULL || offset<0 || limit<0) {
+    return DB_ERROR;
+  }
+  // prepare the search query
+  char *search_query = NULL;
+  if (search != NULL && strlen(search) > 0) {
+    // search for discs in the database with the given search string and optional tag
+    if (include_tracks == 0) {
+      if (tag == 1) {
+        // search on track name (1)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_track) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_track);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 2) {
+        // search on artist name (2)
+        search_query = calloc(strlen(db_select_disc_search) + strlen(db_select_disc_search_where_artist) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_search);
+        strcat(search_query, db_select_disc_search_where_artist);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 3) {
+        // search on genre name (3)
+        search_query = calloc(strlen(db_select_disc_search) + strlen(db_select_disc_search_where_genre) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_search);
+        strcat(search_query, db_select_disc_search_where_genre);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 4) {
+        // search on year (4)
+        search_query = calloc(strlen(db_select_disc_search) + strlen(db_select_disc_search_where_year) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_search);
+        strcat(search_query, db_select_disc_search_where_year);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else { 
+        // default to search on album name (0)
+        search_query = calloc(strlen(db_select_disc_search) + strlen(db_select_disc_search_where_album) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_search);
+        strcat(search_query, db_select_disc_search_where_album);
+        strcat(search_query, db_select_disc_search_order_limit);
+      }
+    } else {
+      // include tracks in the search
+      if (tag == 1) {
+        // search on track name (1)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_track) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_track);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 2) {
+        // search on artist name (2)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_artist) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_artist);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 3) {
+        // search on genre name (3)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_genre) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_genre);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else if (tag == 4) {
+        // search on year (4)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_year) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_year);
+        strcat(search_query, db_select_disc_search_order_limit);
+      } else { 
+        // default to search on album name (0)
+        search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_where_album) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+        strcpy(search_query, db_select_disc_track_search);
+        strcat(search_query, db_select_disc_search_where_album);
+        strcat(search_query, db_select_disc_search_order_limit);
+      }
+    }
+  } else {
+    // no search string provided, so use the default query to get a list of discs or discs and tracks
+    if (include_tracks == 0) {
+      search_query = calloc(strlen(db_select_disc_search) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+      strcpy(search_query, db_select_disc_search);
+      strcat(search_query, db_select_disc_search_order_limit);
+    } else {
+      search_query = calloc(strlen(db_select_disc_track_search) + strlen(db_select_disc_search_order_limit) + 1, sizeof(char));
+      strcpy(search_query, db_select_disc_track_search);
+      strcat(search_query, db_select_disc_search_order_limit);
+    }
+  }
+
+  sqlite3_stmt *statement = NULL;
+  db->status = sqlite3_prepare_v2(db->database, search_query, -1, &statement, NULL);
+  if (db->status != DB_OK) {
+    set_error_message(db);
+    sqlite3_finalize(statement);
+    if (search_query != NULL) {
+      free(search_query);
+    }
+    return DB_ERROR;
+  }
+
+  // bind offset, limit and optional search parameters
+  char *search_pattern = NULL;
+  if (search != NULL && strlen(search) > 0) {
+    if (tag == 4) {
+      // note: the year is an integer, so we do not use the LIKE operator
+      sqlite3_bind_int(statement, 1, atoi(search));
+      sqlite3_bind_int(statement, 2, limit);
+      sqlite3_bind_int(statement, 3, offset);
+    } else {
+      search_pattern = calloc(strlen(search) + 3, sizeof(char));
+      sprintf(search_pattern, "%%%s%%", search);
+      sqlite3_bind_text(statement, 1, search_pattern, -1, SQLITE_STATIC);
+      sqlite3_bind_int(statement, 2, limit);
+      sqlite3_bind_int(statement, 3, offset);
+    }
+  } else {
+    sqlite3_bind_int(statement, 1, limit);
+    sqlite3_bind_int(statement, 2, offset);
+  }
+
+  // execute statement and get results
+  uint64_t last_db_id = UINT64_MAX;
+  disc *disc_info = NULL;
+  int disc_track_idx = 0;
+  int disc_track_cnt = 0;
+  while (1) {
+    db->status = sqlite3_step(statement);
+    if (db->status == SQLITE_ROW) {
+      if (last_db_id != sqlite3_column_int64(statement, 0)) {
+        if (disc_info != NULL) {
+          // store the already collected disc information in the list
+          push_disc_list(disc_info_list, disc_info);
+        }
+        disc_info = (disc *)calloc(1, sizeof(disc));
+        disc_track_idx = 0;
+        disc_track_cnt = sqlite3_column_int(statement, 23);
+        if (include_tracks == 1) {
+          // ensure memory is allocated to add the track information
+          disc_info->tracks = (track *)calloc(disc_track_cnt, sizeof(track));
+        }
+        last_db_id = sqlite3_column_int64(statement, 0);
+      }
+      disc_info->db_id = (uint64_t)sqlite3_column_int64(statement, 0);
+      disc_info->d_id = (unsigned int)sqlite3_column_int64(statement, 1);
+      disc_info->d_length = sqlite3_column_int(statement, 2);
+      disc_info->d_lookup = (uint64_t)sqlite3_column_int64(statement, 3);
+      set_string(&(disc_info->d_artist), (const char*)sqlite3_column_text(statement, 4));
+      set_string(&(disc_info->d_title), (const char*)sqlite3_column_text(statement, 5));
+      set_string(&(disc_info->d_genre), (const char*)sqlite3_column_text(statement, 6));
+      disc_info->d_year = sqlite3_column_int(statement, 7);
+      set_string(&(disc_info->d_extended), (const char*)sqlite3_column_text(statement, 8));
+      set_string(&(disc_info->cddb_query), (const char*)sqlite3_column_text(statement, 9));
+      set_string(&(disc_info->cddb_category), (const char*)sqlite3_column_text(statement, 10));
+      disc_info->cddb_e_id = (unsigned int)sqlite3_column_int64(statement, 11);
+      disc_info->cddb_d_id = (unsigned int)sqlite3_column_int64(statement, 12);
+      disc_info->cddb_revision = sqlite3_column_int(statement, 13);
+      disc_info->cddb_complete = sqlite3_column_int(statement, 14);
+      set_string(&(disc_info->mb_query), (const char*)sqlite3_column_text(statement, 15));
+      set_string(&(disc_info->mb_fuzzy_lookup), (const char*)sqlite3_column_text(statement, 16));
+      set_string(&(disc_info->mb_disc_id), (const char*)sqlite3_column_text(statement, 17));
+      set_string(&(disc_info->mb_release_id), (const char*)sqlite3_column_text(statement, 18));
+      disc_info->mb_front_cover_size = sqlite3_column_bytes(statement, 19);
+      disc_info->mb_back_cover_size = sqlite3_column_bytes(statement, 20);
+      disc_info->mb_complete = sqlite3_column_int(statement, 21);
+      disc_info->d_extracted = sqlite3_column_int(statement, 22);
+      disc_info->d_tracks = sqlite3_column_int(statement, 23);
+      if (include_tracks == 1) {
+        // add track information
+        if (disc_track_idx < disc_track_cnt) {
+          disc_info->tracks[disc_track_idx].t_num = sqlite3_column_int(statement, 24);
+          disc_info->tracks[disc_track_idx].t_length = sqlite3_column_int(statement, 25);
+          set_string(&(disc_info->tracks[disc_track_idx].t_title), (const char*)sqlite3_column_text(statement, 26));
+          set_string(&(disc_info->tracks[disc_track_idx].t_artist), (const char*)sqlite3_column_text(statement, 4));
+          set_string(&(disc_info->tracks[disc_track_idx].t_album), (const char*)sqlite3_column_text(statement, 5));
+          set_string(&(disc_info->tracks[disc_track_idx].t_genre), (const char*)sqlite3_column_text(statement, 6));
+          disc_info->tracks[disc_track_idx].t_year = sqlite3_column_int(statement, 27);
+          set_string(&(disc_info->tracks[disc_track_idx].t_extended), (const char*)sqlite3_column_text(statement, 28));
+          set_string(&(disc_info->tracks[disc_track_idx].t_filename), (const char*)sqlite3_column_text(statement, 29));
+          disc_info->tracks[disc_track_idx].t_skipped = sqlite3_column_int(statement, 30);  
+          // overriding the number of tracks with the actual number of tracks retrieved for this disc
+          disc_info->d_tracks = disc_track_idx + 1;
+        }
+        disc_track_idx++;
+      } else {
+        disc_info->tracks = NULL;
+      } 
+    } else if (db->status == SQLITE_DONE) {
+      if (disc_info != NULL) {
+        // store the collected disc information in the list
+        push_disc_list(disc_info_list, disc_info);
+      }
+      break;
+    } else {
+      set_error_message(db);
+      sqlite3_finalize(statement);
+      if (search_pattern != NULL) {
+        free(search_pattern);
+      }
+      if (search_query != NULL) {
+        free(search_query);
+      }
+      return DB_ERROR;
+    }
+  }
+  // delete statement
+  db->status = sqlite3_finalize(statement);
+  if (search_pattern != NULL) {
+    free(search_pattern);
+  }
+  if (search_query != NULL) {
+      free(search_query);
+  }
+  // done. disc and (optional) track information retrieved
   return DB_OK;
 }
 

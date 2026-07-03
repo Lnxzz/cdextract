@@ -477,7 +477,7 @@ const char *db_select_disc_id_by_disc_info = \
 const char *db_exists_disc_id = \
   "SELECT [disc_id] FROM disc WHERE [disc_id]=?";
 
-const char *db_select_disc_list = \
+const char *db_select_disc_search = \
   "SELECT [disc_id],[d_id],[d_length],[d_lookup],[artist_name],[album_name],[genre_name],[d_year],[d_extended]," \
   "  [cddb_query],[category_name],[cddb_entry_id],[cddb_disc_id],[cddb_revision],[cddb_complete]," \
   "  [mb_query],[mb_fuzzy_lookup],[mb_disc_id],[mb_release_id]," \
@@ -488,7 +488,39 @@ const char *db_select_disc_list = \
   "INNER JOIN album on disc.[d_title] = album.[album_id] " \
   "INNER JOIN genre on disc.[d_genre] = genre.[genre_id] " \
   "LEFT JOIN cover as front_cover on disc.[mb_front_cover_id] = front_cover.[cover_id] " \
+  "LEFT JOIN cover as back_cover on disc.[mb_back_cover_id] = back_cover.[cover_id] ";
+
+const char *db_select_disc_track_search = \
+  "SELECT [disc_id],[d_id],[d_length],[d_lookup],[artist_name],[album_name],[genre_name],[d_year],[d_extended]," \
+  "  [cddb_query],[category_name],[cddb_entry_id],[cddb_disc_id],[cddb_revision],[cddb_complete]," \
+  "  [mb_query],[mb_fuzzy_lookup],[mb_disc_id],[mb_release_id]," \
+  "  front_cover.[cover_data],back_cover.[cover_data],[mb_complete],[d_extracted],[d_tracks]," \
+  "  [t_num],[t_length],[t_title],[t_year],[t_extended],[t_filename],[t_skipped] " \
+  "FROM disc " \
+  "INNER JOIN category on disc.[cddb_category] = category.[category_id] " \
+  "INNER JOIN artist on disc.[d_artist] = artist.[artist_id] " \
+  "INNER JOIN album on disc.[d_title] = album.[album_id] " \
+  "INNER JOIN genre on disc.[d_genre] = genre.[genre_id] " \
+  "LEFT JOIN cover as front_cover on disc.[mb_front_cover_id] = front_cover.[cover_id] " \
   "LEFT JOIN cover as back_cover on disc.[mb_back_cover_id] = back_cover.[cover_id] " \
+  "LEFT JOIN track on disc.[disc_id] = track.[t_disc_id]";
+
+const char *db_select_disc_search_where_album = \
+  "WHERE [album_name] LIKE ? ";
+
+const char *db_select_disc_search_where_track = \
+  "WHERE [t_title] LIKE ? ";
+
+const char *db_select_disc_search_where_artist = \
+  "WHERE [artist_name] LIKE ? ";
+
+const char *db_select_disc_search_where_genre = \
+  "WHERE [genre_name] LIKE ? ";
+
+const char *db_select_disc_search_where_year = \
+  "WHERE [d_year] = ? ";
+
+const char *db_select_disc_search_order_limit = \
   "ORDER BY [disc].[rowid] LIMIT ? OFFSET ?;";
 
 const char *db_select_disc_id_by_toc = \

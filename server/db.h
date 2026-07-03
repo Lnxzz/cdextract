@@ -265,7 +265,7 @@ long get_track_id(sql_db *db, long disc_id, int track_num);
 long get_track_count(sql_db *db, const char *resource_id, int *track_count);
 
 /**
- * @brief get the disc information linked to the given resource id from the database
+ * @brief get a list of disc and optional track information from the database
  * @param db database structure
  * @param limit the limit of the list
  * @param offset the offset to start the list
@@ -273,7 +273,20 @@ long get_track_count(sql_db *db, const char *resource_id, int *track_count);
  * @param disc_info_list output disc information list structure
  * @return 0 if successful; another value indicates an error
  */
-int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list);
+//int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list);
+
+/**
+ * @brief get a list of disc and optional track information filtered by the given criteria from the database
+ * @param db database structure
+ * @param limit the limit of the list
+ * @param offset the offset to start the list
+ * @param search the search string to filter the list
+ * @param tag the tag to filter the list (0=disc, 1=track, 2=artist, 3=genre, 4=year)
+ * @param include_tracks indicator to include the track data
+ * @param disc_info_list output disc information list structure
+ * @return 0 if successful; another value indicates an error
+ */
+int get_disc_list_from_database(sql_db *db, int limit, int offset, const char *search, int tag, int include_tracks, disc_list **disc_info_list);
 
 /**
  * @brief get the disc information from the database using the toc information from the disc
