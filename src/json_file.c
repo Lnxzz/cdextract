@@ -250,23 +250,26 @@ int json_read_disc_info(disc *disc_info, const char *file_path, int verbose) {
         if (strlen(front_cover_file) > 0) {
           // determine full path of the front cover
 
-          // front_cover_file: a/b/cover.jpg
-          // file_path: x/y/z/a/b/a-b.json
-          // full path: x/y/z/a/b/cover.jpg
-          
+          // front_cover_file: a2/b2/cover.jpg
+          // file_path: x/y/z/a1/b1/a-b.json
+          // full path: x/y/z/a1/b1/cover.jpg
+
+          // determine cover folder without trailing slash
           char *fpp = strrchr(file_path, '/');
           int fpp_len = strlen(file_path) - strlen(fpp);
-          char *fc_p = malloc((fpp_len + 1) * sizeof(char));
+          char *fc_p = calloc(fpp_len + 1, sizeof(char));
           strncpy(fc_p, file_path, fpp_len);
 
+          // add the cover filename
           char *fcp = strrchr(front_cover_file, '/');
           char *fc_full_path;
           if (fcp != NULL) {
-            int fc_full_len = snprintf(NULL, 0, "%s/%s", fc_p, fcp);
+            // note: increase fcp to discard leading '/' from the cover filename
+            int fc_full_len = snprintf(NULL, 0, "%s/%s", fc_p, fcp + 1);
             fc_full_path = malloc((fc_full_len + 1) * sizeof(char));
-            sprintf(fc_full_path, "%s/%s", fc_p, fcp);
+            sprintf(fc_full_path, "%s/%s", fc_p, fcp + 1);
           } else {
-            fc_full_path = malloc((fpp_len + strlen(CDE_COVER_FRONT) + 1) * sizeof(char));
+            fc_full_path = malloc((fpp_len + strlen(CDE_COVER_FRONT) + 2) * sizeof(char));
             sprintf(fc_full_path, "%s/%s", fc_p, CDE_COVER_FRONT);
           }
 
@@ -291,19 +294,22 @@ int json_read_disc_info(disc *disc_info, const char *file_path, int verbose) {
         if (strlen(back_cover_file) > 0) {
           // determine full path of the back cover
           
+          // determine cover folder without trailing slash
           char *fpp = strrchr(file_path, '/');
           int fpp_len = strlen(file_path) - strlen(fpp);
-          char *bc_p = malloc((fpp_len + 1) * sizeof(char));
+          char *bc_p = calloc(fpp_len + 1, sizeof(char));
           strncpy(bc_p, file_path, fpp_len);
 
+          // add the cover filename
           char *bcp = strrchr(back_cover_file, '/');
           char *bc_full_path;
           if (bcp != NULL) {
-            int bc_full_len = snprintf(NULL, 0, "%s/%s", bc_p, bcp);
+            // note: increase bcp to discard leading '/' from the cover filename
+            int bc_full_len = snprintf(NULL, 0, "%s/%s", bc_p, bcp + 1);
             bc_full_path = malloc((bc_full_len + 1) * sizeof(char));
-            sprintf(bc_full_path, "%s/%s", bc_p, bcp);
+            sprintf(bc_full_path, "%s/%s", bc_p, bcp + 1);
           } else {
-            bc_full_path = malloc((fpp_len + strlen(CDE_COVER_BACK) + 1) * sizeof(char));
+            bc_full_path = malloc((fpp_len + strlen(CDE_COVER_BACK) + 2) * sizeof(char));
             sprintf(bc_full_path, "%s/%s", bc_p, CDE_COVER_BACK);
           }
 
