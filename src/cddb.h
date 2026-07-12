@@ -53,13 +53,13 @@ typedef enum cddb_category {
 #define CDBB_GENRE_MAP_TYPE_BEGINS_OR 3
 #define CDBB_GENRE_MAP_TYPE_CONTAINS 4
 
-typedef struct cdddb_genre_map {
+typedef struct cddb_genre_map {
   int map_type;
   const char **from_genre_str;
   const char *to_genre_str;
-} cdddb_genre_map;
+} cddb_genre_map;
 
-static const cdddb_genre_map genre_mapping[] = {
+static const cddb_genre_map genre_mapping[] = {
   { .map_type = CDBB_GENRE_MAP_TYPE_EQUAL_AND, .from_genre_str = (const char *[]){"Top", "Hits", NULL}, .to_genre_str = "Pop" },
   { .map_type = CDBB_GENRE_MAP_TYPE_EQUAL_AND, .from_genre_str = (const char *[]){"Sound", "Fx", NULL}, .to_genre_str = "Sound FX" },
   { .map_type = CDBB_GENRE_MAP_TYPE_EQUAL_AND, .from_genre_str = (const char *[]){"New", "Wave", NULL}, .to_genre_str = "New Wave" },

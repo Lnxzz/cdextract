@@ -272,7 +272,7 @@ int json_read_disc_info(disc *disc_info, const char *file_path, int verbose) {
 
           long front_cover_size = read_file(&(disc_info->mb_front_cover), fc_full_path);
           if (front_cover_size >= 0) {
-            if (front_cover_size != disc_info->mb_front_cover_size) {
+            if (front_cover_size != disc_info->mb_front_cover_size && disc_info->mb_front_cover_size > 0) {
               cde_report(CDE_MSG_TYPE_WARNING, "front cover: %s has different size: %d", fc_full_path, front_cover_size);
             }
             disc_info->mb_front_cover_size = (int)front_cover_size; // ensure correct size
@@ -309,7 +309,7 @@ int json_read_disc_info(disc *disc_info, const char *file_path, int verbose) {
 
           long back_cover_size = read_file(&(disc_info->mb_back_cover), bc_full_path);
           if (back_cover_size >= 0) {
-            if (back_cover_size != disc_info->mb_back_cover_size) {
+            if (back_cover_size != disc_info->mb_back_cover_size && disc_info->mb_back_cover_size > 0) {
               cde_report(CDE_MSG_TYPE_WARNING, "back cover: %s has different size: %d", bc_full_path, back_cover_size);
             }
             disc_info->mb_back_cover_size = (int)back_cover_size; // ensure correct size

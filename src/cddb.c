@@ -566,6 +566,12 @@ int cddb_parse_data(disc *disc_info, cdrom_drive *drive, char* cddb_data, int po
   int title_nr = -1;
   int old_title_nr = -1;
 
+  // set default cddb category if not set
+  if (strlen(disc_info->cddb_category) == 0) {
+    disc_info->cddb_category = realloc(disc_info->cddb_category, (strlen(cddb_get_string_category(data)) + 1) * sizeof(char));
+    strcpy(disc_info->cddb_category, cddb_get_string_category(data));
+  }
+
   // parse cddb data
   int proceed = 1;
   while (proceed) {

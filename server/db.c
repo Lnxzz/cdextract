@@ -1671,6 +1671,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
 
     // check inserted/retrieved cover identifiers
     if (front_cover_id < 0 || back_cover_id < 0) {
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
 
@@ -1679,6 +1680,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
     if (db->status != DB_OK) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
     // bind disc information values
@@ -1715,6 +1717,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
       } else {
         set_error_message(db);
         sqlite3_finalize(statement);
+        sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
         return DB_ERROR;
       }
     }
@@ -1726,6 +1729,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
     if (db->status != DB_OK) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
     // bind disc information values
@@ -1744,6 +1748,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
     if (db->status != SQLITE_DONE) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
     // delete statement
@@ -1752,7 +1757,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
 
   // disc_id must be available to insert or update track information
   if (disc_id < 0) {
-    sqlite3_exec(db->database, DB_END_TRANSACTION, NULL, NULL, NULL);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
 
@@ -1761,6 +1766,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
   if (db->status != DB_OK) {
     set_error_message(db);
     sqlite3_finalize(statement);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   sqlite3_stmt *statement2 = NULL;
@@ -1769,6 +1775,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
     set_error_message(db);
     sqlite3_finalize(statement);
     sqlite3_finalize(statement2);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   long track_id = -1;
@@ -1797,6 +1804,7 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
         set_error_message(db);
         sqlite3_finalize(statement);
         sqlite3_finalize(statement2);
+        sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
         return DB_ERROR;
       }
       // reset statement so we can bind the values for the next track
@@ -1823,16 +1831,17 @@ int store_disc_in_database(sql_db *db, disc *disc_info, int update) {
         set_error_message(db);
         sqlite3_finalize(statement);
         sqlite3_finalize(statement2);
+        sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
         return DB_ERROR;
       }
       // reset statement so we can bind the values for the next track
       db->status = sqlite3_reset(statement2);
     }
   }
-  // delete statements
+  // delete statements and commit transaction
   db->status = sqlite3_finalize(statement);
   db->status = sqlite3_finalize(statement2);
-  db->status = sqlite3_exec(db->database, DB_END_TRANSACTION, NULL, NULL, NULL);
+  db->status = sqlite3_exec(db->database, DB_COMMIT_TRANSACTION, NULL, NULL, NULL);
 
   // done. disc information is inserted or disc was already present and updated
   disc_info->db_id = disc_id;
@@ -2498,6 +2507,7 @@ int update_cddb_entry_in_database(sql_db *db, disc *disc_info, long cddb_id, lon
   if (db->status != DB_OK) {
     set_error_message(db);
     sqlite3_finalize(statement);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   // bind disc information values
@@ -2522,6 +2532,7 @@ int update_cddb_entry_in_database(sql_db *db, disc *disc_info, long cddb_id, lon
     } else {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
   }
@@ -2532,6 +2543,7 @@ int update_cddb_entry_in_database(sql_db *db, disc *disc_info, long cddb_id, lon
   if (db->status != DB_OK) {
     set_error_message(db);
     sqlite3_finalize(statement);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   long track_id = -1;
@@ -2548,15 +2560,16 @@ int update_cddb_entry_in_database(sql_db *db, disc *disc_info, long cddb_id, lon
       if (db->status != SQLITE_DONE) {
         set_error_message(db);
         sqlite3_finalize(statement);
+        sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
         return DB_ERROR;
       }
       // reset statement so we can bind the values for the next track
       db->status = sqlite3_reset(statement);
     }
   }
-  // delete statements
+  // delete statement and commit transaction
   db->status = sqlite3_finalize(statement);
-  db->status = sqlite3_exec(db->database, DB_END_TRANSACTION, NULL, NULL, NULL);
+  db->status = sqlite3_exec(db->database, DB_COMMIT_TRANSACTION, NULL, NULL, NULL);
 
   // done. disc information is updated
   return DB_OK;
@@ -2596,6 +2609,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
   if (db->status != DB_OK) {
     set_error_message(db);
     sqlite3_finalize(statement);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   // bind disc information values
@@ -2620,6 +2634,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
     } else {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
   }
@@ -2627,6 +2642,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
   db->status = sqlite3_finalize(statement);
   // cddb_id must be available to insert the track information
   if (cddb_id < 0) {
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   // insert the track information
@@ -2634,6 +2650,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
   if (db->status != DB_OK) {
     set_error_message(db);
     sqlite3_finalize(statement);
+    sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
     return DB_ERROR;
   }
   for (int i=0; i<disc_info->d_tracks; i++) {
@@ -2647,6 +2664,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
     if (db->status != SQLITE_DONE) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
     // reset statement so we can bind the values for the next track
@@ -2661,6 +2679,7 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
     if (db->status != DB_OK) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR; // added return statement to handle error case
     }
     // bind lookup and cddb id's
@@ -2671,12 +2690,14 @@ int insert_cddb_entry_in_database(sql_db *db, disc *disc_info, long category_id,
     if (db->status != SQLITE_DONE) {
       set_error_message(db);
       sqlite3_finalize(statement);
+      sqlite3_exec(db->database, DB_ROLLBACK_TRANSACTION, NULL, NULL, NULL);
       return DB_ERROR;
     }
     // delete temp table insert statement
     db->status = sqlite3_finalize(statement);
   }
-  sqlite3_exec(db->database, DB_END_TRANSACTION, NULL, NULL, NULL);
+  // commit transaction
+  sqlite3_exec(db->database, DB_COMMIT_TRANSACTION, NULL, NULL, NULL);
 
   // done. disc information is inserted
   return DB_OK;

@@ -421,7 +421,7 @@ void process_cddb_file(char *cddb_file, sql_db *db) {
             cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from cddb data: %s (%d) %s", cddb_file, db->status, db->msg);
           }
         } else {
-          cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from cddb data; no or invalid category id: %s", cddb_file);
+          cde_report(CDE_MSG_TYPE_ERROR, "scan audio folder: unable to store disc information from cddb data; no or invalid category id or lookup id: %s", cddb_file);
         }
       } else if (res == CDE_ERROR_CDDB_ENCODING) {
         // encoding error
