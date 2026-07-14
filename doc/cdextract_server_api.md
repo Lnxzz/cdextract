@@ -1228,6 +1228,7 @@ Content-Type: application/json
 The discs endpoint controls stored disc information
 Supported disc operations are:
 * **GET /discs** - get a (filtered) list of stored discs
+* **GET /discs/meta** - get the metadata for the stored discs
 * **GET /discs/rescan** - get the discs database rescan status
 * **POST /discs/rescan** - rescan the stored discs on the filesystem to update the database
 * **GET /discs/backup** - get the discs database backup status
@@ -1298,6 +1299,59 @@ Content-Type: application/json
 {
   "code": 404
   "message": "Resource not found"
+}
+```
+```
+HTTP/1.1 503 Service Unavailable
+Server: cdextract-server
+Content-Length: 100
+Content-Type: application/json
+
+{
+  "code": 503
+  "message": "Service Unavailable. The server is not ready to handle the request."
+}
+```
+
+### get disc metadata
+Get the metadata for the stored discs including the total number of discs, tracks and artists.
+
+#### end point: `http://<host>:<port>/v1/discs/meta`
+#### request method: **GET**
+
+#### example:
+**request**
+
+``
+wget --method=GET http://localhost:8001/v1/discs/meta
+``
+
+**response**
+
+Success
+```
+HTTP/1.1 200 OK
+Server: cdextract-server
+Content-Length: 46
+Content-Type: application/json
+
+{
+  "discs": 207, 
+  "tracks": 2417, 
+  "artists": 108
+}
+```
+
+Failure
+```
+HTTP/1.1 500 Internal Server Error
+Server: cdextract-server
+Content-Length: 54
+Content-Type: application/json
+
+{
+  "code": 500
+  "message": "Internal Server Error"
 }
 ```
 ```

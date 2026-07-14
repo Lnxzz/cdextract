@@ -85,6 +85,7 @@ const struct operation_path operations[] = {
     {"/v1/discs/rescan", {{GET, api_rescan_status}, {POST, api_rescan_discs}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
     {"/v1/discs/rebuild", {{GET, api_rebuild_status}, {POST, api_rebuild_discs}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
     {"/v1/discs/backup", {{GET, api_backup_status}, {POST, api_backup_discs}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
+    {"/v1/discs/meta", {{GET, api_get_discs_metadata}, {INVALID, api_default_response}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
     {"/v1/discs/*/front", {{GET, api_get_disc_front_cover_by_id}, {POST, api_update_disc_front_cover_by_id}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
     {"/v1/discs/*/back", {{GET, api_get_disc_back_cover_by_id}, {POST, api_update_disc_back_cover_by_id}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
     {"/v1/discs/*/audio", {{GET, api_get_audio_by_id}, {INVALID, api_default_response}, {INVALID, api_default_response}, {INVALID, api_default_response}}},
@@ -161,6 +162,22 @@ void set_body_from_drive_info(cde_state *cde, http_response *response) {
            cde->drv == NULL ? 0 : 1,
            cde->drv == NULL ? 0 : cde->drv->opened
            );
+  response->code = OK;
+  response->mime_type = MIME_TYPE_JSON;
+  response->content_type = get_content_type(response->mime_type);
+  response->size = strlen(json_response);
+  response->body = calloc(response->size+1, sizeof(char));
+  strcpy(response->body, json_response);
+  free(json_response);
+}
+
+/**
+ * @brief set the disc metadata response body as json 
+ *        from the counters
+ */
+void set_body_from_discs_metadata(long disc_count, long track_count, long artist_count, http_response *response) {
+  char *json_response = calloc(MAX_STATUS_RESPONSE+1, sizeof(char));
+  snprintf(json_response, MAX_STATUS_RESPONSE, "{\"discs\": %ld, \"tracks\": %ld, \"artists\": %ld}", disc_count, track_count, artist_count);
   response->code = OK;
   response->mime_type = MIME_TYPE_JSON;
   response->content_type = get_content_type(response->mime_type);
@@ -493,7 +510,7 @@ void api_init(char *device_name, char *audio_folder, char *cddb_folder, char *we
   // initialize the cdextract library
   if (cde == NULL) {
     cde = calloc(1, sizeof(cde_state));
-    cde_initialize(cde, device_name, audio_folder, cddb_folder, web_folder,api_report_callback, api_set_extract_disc_progress);
+    cde_initialize(cde, device_name, audio_folder, cddb_folder, web_folder, api_report_callback, api_set_extract_disc_progress);
   }
   // open the database connection
   if (db == NULL) {
@@ -1747,42 +1764,6 @@ void api_get_audio(http_request *request, http_response *response) {
 }
 
 /**
- * @brief list all stored discs
- */
-void api_list_discs(http_request *request, http_response *response) {
-  if (cde == NULL) {
-    cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: cde context unavailable");
-    response->code = SERVICE_UNAVAILABLE;
-    api_default_response(request, response);
-    return;
-  }
-
-  if (request->search != NULL && strlen(request->search) > 0) {
-    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%s][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->search, request->tag, request->format);
-  } else {
-    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->tag, request->format);
-  }
-    
-  if (request->limit > 0 && request->limit <= MAX_REQUEST_LIMIT && request->offset >= 0) {
-    disc_list *disc_info_list = NULL;
-    // search for discs (and optionally tracks) in the database with the given search string and tag if present
-    if (get_disc_list_from_database(db, request->limit, request->offset, request->search, request->tag, request->format, &disc_info_list) == 0) {
-      set_body_from_disc_list(&disc_info_list, response);
-      free_disc_list(&disc_info_list);
-      return;
-    }
-    
-    cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: unable to get disc list from database: (%d) %s", db->status, db->msg);
-    if (disc_info_list != NULL) {
-      // free the disc list if it was allocated
-      free_disc_list(&disc_info_list);
-    }
-  }
-  response->code = BAD_REQUEST;
-  api_default_response(request, response);
-}
-
-/**
  * @brief get the rescan status
  */
 void api_rescan_status(http_request *request, http_response *response) {
@@ -1925,6 +1906,70 @@ void api_backup_discs(http_request *request, http_response *response) {
     return;
   }
   response->code = RESOURCE_LOCKED;
+  api_default_response(request, response);
+}
+
+/**
+ * @brief get the discs database metadata including the 
+ *        total number of discs, tracks and artists
+ */
+extern void api_get_discs_metadata(http_request *request, http_response *response) {
+  if (db == NULL || db->mode != DB_NORMAL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_get_meta: db unavailable");
+    response->code = SERVICE_UNAVAILABLE;
+    api_default_response(request, response);
+    return;
+  }
+
+  cde_report(CDE_MSG_TYPE_DEBUG, "api_get_meta: [%s]\n", request->path);
+
+  long disc_count = get_total_disc_count(db);
+  long track_count = get_total_track_count(db);
+  long artist_count = get_total_artist_count(db);
+
+  if (disc_count >= 0 && track_count >= 0 && artist_count >= 0) {
+    set_body_from_discs_metadata(disc_count, track_count, artist_count, response);
+    return;
+  }
+
+  // an error occured while getting the metadata
+  response->code = INTERNAL_SERVER_ERROR;
+  api_default_response(request, response);
+}
+
+/**
+ * @brief list all stored discs
+ */
+void api_list_discs(http_request *request, http_response *response) {
+  if (cde == NULL) {
+    cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: cde context unavailable");
+    response->code = SERVICE_UNAVAILABLE;
+    api_default_response(request, response);
+    return;
+  }
+
+  if (request->search != NULL && strlen(request->search) > 0) {
+    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%s][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->search, request->tag, request->format);
+  } else {
+    cde_report(CDE_MSG_TYPE_DEBUG, "api_list_discs: [%s][%s][%d][%d][%d][%d]", cde->audio_folder, request->path, request->limit, request->offset, request->tag, request->format);
+  }
+    
+  if (request->limit > 0 && request->limit <= MAX_REQUEST_LIMIT && request->offset >= 0) {
+    disc_list *disc_info_list = NULL;
+    // search for discs (and optionally tracks) in the database with the given search string and tag if present
+    if (get_disc_list_from_database(db, request->limit, request->offset, request->search, request->tag, request->format, &disc_info_list) == 0) {
+      set_body_from_disc_list(&disc_info_list, response);
+      free_disc_list(&disc_info_list);
+      return;
+    }
+    
+    cde_report(CDE_MSG_TYPE_ERROR, "api_list_discs: unable to get disc list from database: (%d) %s", db->status, db->msg);
+    if (disc_info_list != NULL) {
+      // free the disc list if it was allocated
+      free_disc_list(&disc_info_list);
+    }
+  }
+  response->code = BAD_REQUEST;
   api_default_response(request, response);
 }
 

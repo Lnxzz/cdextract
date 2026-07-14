@@ -419,6 +419,18 @@ const char *db_backup_vacuum = \
   "DROP INDEX IF EXISTS idx_cddb_title;"
 
 
+// statistic of the number of discs, tracks and artists
+
+const char *db_select_count_discs = \
+  "SELECT COUNT(*) FROM disc";
+
+const char *db_select_count_tracks = \
+  "SELECT COUNT(*) FROM track";
+
+const char *db_select_count_artists = \
+  "SELECT COUNT(*) FROM artist";
+
+
 // extracted cd's including track information and covers
 
 const char *db_select_category_id = \

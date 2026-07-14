@@ -401,6 +401,99 @@ int rebuild_cddb_post(sql_db *db) {
 }
 
 /**
+ * @brief get the total number of stored discs
+ * @return the number of stored discs - a value <0 indicates an error
+ */
+long get_total_disc_count(sql_db *db) {
+  sqlite3_stmt *statement = NULL;
+  long disc_count = -1;
+  db->status = sqlite3_prepare_v2(db->database, db_select_count_discs, -1, &statement, NULL);
+  if (db->status != DB_OK) {
+    set_error_message(db);
+    sqlite3_finalize(statement);
+    return disc_count;
+  }
+  // execute statement and get result
+  while (1) {
+    db->status = sqlite3_step(statement);
+    if (db->status == SQLITE_ROW) {
+      disc_count = sqlite3_column_int64(statement, 0);
+    } else if (db->status == SQLITE_DONE) {
+      break;
+    } else {
+      set_error_message(db);
+      sqlite3_finalize(statement);
+      return disc_count;
+    }
+  }
+  // delete statement
+  db->status = sqlite3_finalize(statement);
+  return disc_count;
+}
+
+/**
+ * @brief get the total number of stored tracks
+ * @return the number of stored tracks - a value <0 indicates an error
+ */
+long get_total_track_count(sql_db *db) {
+  sqlite3_stmt *statement = NULL;
+  long track_count = -1;
+  db->status = sqlite3_prepare_v2(db->database, db_select_count_tracks, -1, &statement, NULL);
+  if (db->status != DB_OK) {
+    set_error_message(db);
+    sqlite3_finalize(statement);
+    return track_count;
+  }
+  // execute statement and get result
+  while (1) {
+    db->status = sqlite3_step(statement);
+    if (db->status == SQLITE_ROW) {
+      track_count = sqlite3_column_int64(statement, 0);
+    } else if (db->status == SQLITE_DONE) {
+      break;
+    } else {
+      set_error_message(db);
+      sqlite3_finalize(statement);
+      return track_count;
+    }
+  }
+  // delete statement
+  db->status = sqlite3_finalize(statement);
+  return track_count;
+}
+
+/**
+ * @brief get the total number of stored artists
+ * @return the number of stored artists - a value <0 indicates an error
+ */
+long get_total_artist_count(sql_db *db) {
+  sqlite3_stmt *statement = NULL;
+  long artist_count = -1;
+  db->status = sqlite3_prepare_v2(db->database, db_select_count_artists, -1, &statement, NULL);
+  if (db->status != DB_OK) {
+    set_error_message(db);
+    sqlite3_finalize(statement);
+    return artist_count;
+  }
+  // execute statement and get result
+  while (1) {
+    db->status = sqlite3_step(statement);
+    if (db->status == SQLITE_ROW) {
+      artist_count = sqlite3_column_int64(statement, 0);
+    } else if (db->status == SQLITE_DONE) {
+      break;
+    } else {
+      set_error_message(db);
+      sqlite3_finalize(statement);
+      return artist_count;
+    }
+  }
+  // delete statement
+  db->status = sqlite3_finalize(statement);
+  return artist_count;
+}
+
+/**
  * @brief get the disc category id
  * @param db database structure
  * @param category_name the disc category name
@@ -1052,120 +1145,6 @@ long get_track_count(sql_db *db, const char *resource_id, int *track_count) {
   db->status = sqlite3_finalize(statement);
   return disc_id;
 }
-
-/**
- * @brief get a list of disc and optional track information from the database
- * @param db database structure
- * @param limit the limit of the list
- * @param offset the offset to start the list
- * @param include_tracks indicator to include the track data
- * @param disc_info_list output disc information list structure
- * @return 0 if successful; another value indicates an error
- */
-/*int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list) {
-  if (db==NULL || offset<0 || limit<0) {
-    return DB_ERROR;
-  }
-  // prepare get disc list statement
-  sqlite3_stmt *statement = NULL;
-  db->status = sqlite3_prepare_v2(db->database, db_select_disc_list, -1, &statement, NULL);
-  if (db->status != DB_OK) {
-    set_error_message(db);
-    sqlite3_finalize(statement);
-    return DB_ERROR;
-  }
-  // bind offset and limit parameters
-  sqlite3_bind_int(statement, 1, limit);
-  sqlite3_bind_int(statement, 2, offset);
-  // execute statement and get results
-  while (1) {
-    db->status = sqlite3_step(statement);
-    if (db->status == SQLITE_ROW) {
-      disc *disc_info = (disc *)calloc(1, sizeof(disc));
-      disc_info->db_id = (uint64_t)sqlite3_column_int64(statement, 0);
-      disc_info->d_id = (unsigned int)sqlite3_column_int64(statement, 1);
-      disc_info->d_length = sqlite3_column_int(statement, 2);
-      disc_info->d_lookup = (uint64_t)sqlite3_column_int64(statement, 3);
-      set_string(&(disc_info->d_artist), (const char*)sqlite3_column_text(statement, 4));
-      set_string(&(disc_info->d_title), (const char*)sqlite3_column_text(statement, 5));
-      set_string(&(disc_info->d_genre), (const char*)sqlite3_column_text(statement, 6));
-      disc_info->d_year = sqlite3_column_int(statement, 7);
-      set_string(&(disc_info->d_extended), (const char*)sqlite3_column_text(statement, 8));
-      set_string(&(disc_info->cddb_query), (const char*)sqlite3_column_text(statement, 9));
-      set_string(&(disc_info->cddb_category), (const char*)sqlite3_column_text(statement, 10));
-      disc_info->cddb_e_id = (unsigned int)sqlite3_column_int64(statement, 11);
-      disc_info->cddb_d_id = (unsigned int)sqlite3_column_int64(statement, 12);
-      disc_info->cddb_revision = sqlite3_column_int(statement, 13);
-      disc_info->cddb_complete = sqlite3_column_int(statement, 14);
-      set_string(&(disc_info->mb_query), (const char*)sqlite3_column_text(statement, 15));
-      set_string(&(disc_info->mb_fuzzy_lookup), (const char*)sqlite3_column_text(statement, 16));
-      set_string(&(disc_info->mb_disc_id), (const char*)sqlite3_column_text(statement, 17));
-      set_string(&(disc_info->mb_release_id), (const char*)sqlite3_column_text(statement, 18));
-      disc_info->mb_front_cover_size = sqlite3_column_bytes(statement, 19);
-      disc_info->mb_back_cover_size = sqlite3_column_bytes(statement, 20);
-      disc_info->mb_complete = sqlite3_column_int(statement, 21);
-      disc_info->d_extracted = sqlite3_column_int(statement, 22);
-      disc_info->d_tracks = sqlite3_column_int(statement, 23);
-      if (include_tracks == 1) {
-        // ensure memory is allocated to add the track information
-        disc_info->tracks = (track *)calloc(disc_info->d_tracks, sizeof(track));
-
-        // get track information
-        sqlite3_stmt *statement2 = NULL;
-        db->status = sqlite3_prepare_v2(db->database, db_select_track_details, -1, &statement2, NULL);
-        if (db->status != DB_OK) {
-          set_error_message(db);
-          sqlite3_finalize(statement2);
-          return DB_ERROR;
-        }
-        // bind disc_id parameter
-        sqlite3_bind_int64(statement2, 1, disc_info->db_id);
-        // execute statement and get result
-        int t_idx = 0;
-        while (1) {
-          db->status = sqlite3_step(statement2);
-          if (db->status == SQLITE_ROW) {
-            // disc_id (col:0)
-            disc_info->tracks[t_idx].t_num = sqlite3_column_int(statement2, 1);
-            disc_info->tracks[t_idx].t_length = sqlite3_column_int(statement2, 2);
-            set_string(&(disc_info->tracks[t_idx].t_title), (const char*)sqlite3_column_text(statement2, 3));
-            set_string(&(disc_info->tracks[t_idx].t_artist), (const char*)sqlite3_column_text(statement2, 4));
-            set_string(&(disc_info->tracks[t_idx].t_album), (const char*)sqlite3_column_text(statement2, 5));
-            set_string(&(disc_info->tracks[t_idx].t_genre), (const char*)sqlite3_column_text(statement2, 6));
-            disc_info->tracks[t_idx].t_year = sqlite3_column_int(statement2, 7);
-            set_string(&(disc_info->tracks[t_idx].t_extended), (const char*)sqlite3_column_text(statement2, 8));
-            set_string(&(disc_info->tracks[t_idx].t_filename), (const char*)sqlite3_column_text(statement2, 9));
-            disc_info->tracks[t_idx].t_skipped = sqlite3_column_int(statement2, 10);
-            t_idx++;
-          } else if (db->status == SQLITE_DONE) {
-            break;
-          } else {
-            set_error_message(db);
-            sqlite3_finalize(statement);
-            sqlite3_finalize(statement2);
-            return DB_ERROR;
-          }
-        }
-        // delete statement
-        db->status = sqlite3_finalize(statement2);
-      } else {
-        disc_info->tracks = NULL;
-      }
-      push_disc_list(disc_info_list, disc_info);
-    } else if (db->status == SQLITE_DONE) {
-      break;
-    } else {
-      set_error_message(db);
-      sqlite3_finalize(statement);
-      return DB_ERROR;
-    }
-  }
-  // delete statement
-  db->status = sqlite3_finalize(statement);
-
-  // done. disc and (optional) track information is retrieved
-  return DB_OK;
-}*/
 
 /**
  * @brief get a list of disc and optional track information filtered by the given criteria from the database

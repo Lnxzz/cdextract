@@ -161,6 +161,24 @@ int rebuild_cddb_pre(sql_db *db);
 int rebuild_cddb_post(sql_db *db);
 
 /**
+ * @brief get the total number of stored discs
+ * @return the number of stored discs - a value <0 indicates an error
+ */
+long get_total_disc_count(sql_db *db);
+
+/**
+ * @brief get the total number of stored tracks
+ * @return the number of stored tracks - a value <0 indicates an error
+ */
+long get_total_track_count(sql_db *db);
+
+/**
+ * @brief get the total number of stored artists
+ * @return the number of stored artists - a value <0 indicates an error
+ */
+long get_total_artist_count(sql_db *db);
+
+/**
  * @brief get the disc category id
  * @param db database structure
  * @param category_name the disc category name
@@ -263,17 +281,6 @@ long get_track_id(sql_db *db, long disc_id, int track_num);
  * @return disc_id - the id of the track
  */
 long get_track_count(sql_db *db, const char *resource_id, int *track_count);
-
-/**
- * @brief get a list of disc and optional track information from the database
- * @param db database structure
- * @param limit the limit of the list
- * @param offset the offset to start the list
- * @param include_tracks indicator to include the track data
- * @param disc_info_list output disc information list structure
- * @return 0 if successful; another value indicates an error
- */
-//int get_disc_list_from_database(sql_db *db, int limit, int offset, int include_tracks, disc_list **disc_info_list);
 
 /**
  * @brief get a list of disc and optional track information filtered by the given criteria from the database

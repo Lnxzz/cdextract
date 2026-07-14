@@ -181,11 +181,6 @@ extern void api_update_disc_back_cover(http_request *request, http_response *res
 extern void api_get_audio(http_request *request, http_response *response);
 
 /**
- * @brief list all stored discs
- */
-extern void api_list_discs(http_request *request, http_response *response);
-
-/**
  * @brief get the discs database rescan status
  */
 extern void api_rescan_status(http_request *request, http_response *response);
@@ -214,6 +209,17 @@ extern void api_backup_status(http_request *request, http_response *response);
  * @brief backup the database with stored discs
  */
 extern void api_backup_discs(http_request *request, http_response *response);
+
+/**
+ * @brief get the discs database metadata including the 
+ *        total number of discs, tracks and artists
+ */
+extern void api_get_discs_metadata(http_request *request, http_response *response);
+
+/**
+ * @brief list all stored discs
+ */
+extern void api_list_discs(http_request *request, http_response *response);
 
 /**
  * @brief get information of the specified stored disc

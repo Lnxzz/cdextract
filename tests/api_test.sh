@@ -53,10 +53,13 @@ wget -nv --method=GET -O - http://127.0.0.1:8001/v1/disc 2>&1
 echo "progress status"
 wget -nv --timeout=60 --wait=10 -S -O - http://127.0.0.1:8001/v1/disc/extract 2>&1
 
-echo "disc list from database"
+echo "get disc metadata from database"
+wget -nv --method=GET -O - http://127.0.0.1:8001/v1/discs/meta 2>&1
+
+echo "get disc list from database"
 wget -nv --method=GET -O - http://127.0.0.1:8001/v1/discs 2>&1
 
-echo "disc information from database"
+echo "get disc information from database"
 wget -nv --method=GET -O - http://127.0.0.1:8001/v1/discs/1 2>&1
 
 echo "get front and back cover from database"

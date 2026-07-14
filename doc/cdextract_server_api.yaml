@@ -1006,6 +1006,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/error"
+  /discs/meta:
+    get:
+      summary: "Get the metadata for the stored discs including the total number of discs, tracks and artists."
+      operationId: get_discs_metadata
+      tags:
+        - discs
+      responses:
+        200:
+          description: "Expected response to a valid request. Returns the database rescan status."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/meta"
+        500:
+          description: "Internal Server Error. The server encountered an unexpected condition which prevented it from fulfilling the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error" 
+        503:
+          description: "Service Unavailable. The server is not ready to handle the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        default:
+          description: "Unexpected Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
   /discs/rescan:
     get:
       summary: "Get the discs database rescan status."
@@ -1502,6 +1533,25 @@ components:
         message:
           description: "status/error message"
           type: string
+    meta:
+      description: "stored discs metadata"
+      required:
+        - discs
+        - tracks
+        - artists
+      properties:
+        discs:
+          description: "the total number of stored discs"
+          type: integer
+          minimum: 0
+        tracks:
+          description: "the total number of stored tracks"
+          type: integer
+          minimum: 0
+        artists:
+          description: "the total number of stored artists"
+          type: integer
+          minimum: 0
     status:
       description: "status message"
       required:
